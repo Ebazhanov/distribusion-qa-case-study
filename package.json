@@ -1,24 +1,16 @@
 {
   "name": "distribusion-qa-case-study",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Automated API testing framework for GitHub Gists API built with TypeScript and Playwright for Distribusion QA Case Study.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Ebazhanov/distribusion-qa-case-study.git"
+  },
   "scripts": {
     "test": "npx playwright test",
     "test:debug": "npx playwright test --debug",
     "report": "npx playwright show-report"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Ebazhanov/distribusion-qa-case-study.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/Ebazhanov/distribusion-qa-case-study/issues"
-  },
-  "homepage": "https://github.com/Ebazhanov/distribusion-qa-case-study#readme",
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.1.2",
