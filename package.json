@@ -10,8 +10,8 @@
     "test": "npx playwright test",
     "test:debug": "npx playwright test --debug",
     "report": "npx playwright show-report",
-    "lint": "eslint . --ext .ts",
-    "lint:fix": "eslint . --ext .ts --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.ts\"",
     "format:check": "prettier --check \"**/*.ts\""
   },
