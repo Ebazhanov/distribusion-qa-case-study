@@ -4,6 +4,11 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 
 ---
 
+### 💡 Why Playwright for API Testing?
+* **Zero Additional Dependencies:** Built-in HTTP client (`APIRequestContext`) eliminates the need for external libraries like Axios or Supertest paired with separate runners (Jest/Mocha).
+* **Unified E2E & API Capabilities:** Enables seamless hybrid testing (e.g., seeding data via API and validating UI/workflows within a single test framework).
+* **Native Assertions & Rich Reporting:** Out-of-the-box HTML reporters and strong assertion matchers (`expect(response.ok())`) provide clear execution insights for CI/CD pipelines.
+
 ## 🧪 Test Cases & Coverage
 
 ### 1. Critical CRUD Lifecycle Test Cases

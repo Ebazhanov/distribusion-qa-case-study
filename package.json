@@ -9,12 +9,14 @@
   "scripts": {
     "test": "npx playwright test",
     "test:debug": "npx playwright test --debug",
-    "report": "npx playwright show-report"
+    "report": "npx playwright show-report",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.1.2",
     "dotenv": "^17.4.2",
+    "prettier": "^3.9.6",
     "typescript": "^7.0.2"
   }
 }
