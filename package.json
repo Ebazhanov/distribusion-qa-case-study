@@ -10,7 +10,10 @@
     "test": "npx playwright test",
     "test:debug": "npx playwright test --debug",
     "report": "npx playwright show-report",
-    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\""
+    "lint": "eslint . --ext .ts",
+    "lint:fix": "eslint . --ext .ts --fix",
+    "format": "prettier --write \"**/*.ts\"",
+    "format:check": "prettier --check \"**/*.ts\""
   },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
