@@ -14,18 +14,18 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ## 🧪 Test Cases & Coverage
 
 ### 1. Critical CRUD Lifecycle Test Cases
-| ID        | Test Case            | Method & Endpoint         | Expected Status  | Validation Focus                                  |
-|:----------|:---------------------|:--------------------------|:----------------:|:--------------------------------------------------|
-| **TC-01** | Create Public Gist   | `POST /gists`             |  `201 Created`   | Schema, `id`, `public: true`, file content, owner |
-| **TC-02** | Create Secret Gist   | `POST /gists`             |  `201 Created`   | Schema, `public: false` flag                      |
-| **TC-03** | Get Gist by ID       | `GET /gists/{gist_id}`    |     `200 OK`     | Schema structure, file payload integrity          |
-| **TC-04** | Update Existing Gist | `PATCH /gists/{gist_id}`  |     `200 OK`     | Updating description, modifying & appending files |
-| **TC-05** | Delete Gist          | `DELETE /gists/{gist_id}` | `204 No Content` | State removal (Subsequent `GET` returns `404`)    |
+| Test Case | Endpoint | Status | Validation Focus |
+| :--- | :--- | :---: | :--- |
+| **Create Public Gist** | `POST` `/gists` | `201` | Validate schema, `id`, `public: true`, file content, and owner details |
+| **Create Secret Gist** | `POST` `/gists` | `201` | Validate schema and `public: false` visibility flag |
+| **Get Gist by ID** | `GET` `/gists/{gist_id}` | `200` | Validate structural response schema and file payload integrity |
+| **Update Existing Gist** | `PATCH` `/gists/{gist_id}` | `200` | Update description, modify existing files, append new files |
+| **Delete Gist** | `DELETE` `/gists/{gist_id}` | `204` | Confirm resource deletion (Subsequent `GET` returns `404`) |
 
-### 2. Security & Boundary Validation
+### 2. Security & Boundary Test Cases
 
-| ID        | Test Case             | Method & Endpoint      |   Expected Status   | Validation Focus                                |
-|:----------|:----------------------|:-----------------------|:-------------------:|:------------------------------------------------|
-| **TC-06** | Unauthorized Access   | `POST /gists`          | `401 Unauthorized`  | Missing or invalid Bearer token                 |
-| **TC-07** | Non-Existent Resource | `GET /gists/{gist_id}` |   `404 Not Found`   | Invalid or non-existent `gist_id`               |
-| **TC-08** | Payload Validation    | `POST /gists`          | `422 Unprocessable` | Empty `files` object or missing required params |
+| Test Case | Endpoint | Status | Validation Focus |
+| :--- | :--- | :---: | :--- |
+| **Unauthorized Access** | `POST` `/gists` | `401` | Reject request when Bearer token is missing or invalid |
+| **Non-Existent Resource** | `GET` `/gists/{gist_id}` | `404` | Handle invalid or non-existent `gist_id` gracefully |
+| **Payload Validation** | `POST` `/gists` | `422` | Reject request with empty `files` object or missing required parameters |
