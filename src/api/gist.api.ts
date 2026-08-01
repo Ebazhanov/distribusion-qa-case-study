@@ -10,7 +10,7 @@ export class GistApi {
   }
 
   /**
-   * Creates a new Gist (Public or Secret)
+   * Creates a new Gist (Public or Secret).
    * Accepts standard CreateGistPayload or custom/invalid objects for negative testing.
    */
   async createGist(
@@ -20,7 +20,7 @@ export class GistApi {
   }
 
   /**
-   * Creates a Gist without sending authentication headers (Tests 401 Unauthorized)
+   * Creates a Gist without sending authentication headers (Tests 401 Unauthorized).
    */
   async createGistUnauthenticated(
     payload: CreateGistPayload | Record<string, unknown>,
@@ -34,14 +34,24 @@ export class GistApi {
   }
 
   /**
-   * Retrieves a Gist by its unique ID
+   * Retrieves a Gist by its unique ID.
    */
   async getGist(gistId: string): Promise<APIResponse> {
     return await this.client.get(`/gists/${gistId}`);
   }
 
   /**
-   * Deletes a Gist by its unique ID
+   * Updates an existing Gist description or files via PATCH.
+   */
+  async updateGist(
+    gistId: string,
+    payload: Record<string, unknown>,
+  ): Promise<APIResponse> {
+    return await this.client.patch(`/gists/${gistId}`, { data: payload });
+  }
+
+  /**
+   * Deletes a Gist by its unique ID.
    */
   async deleteGist(gistId: string): Promise<APIResponse> {
     return await this.client.delete(`/gists/${gistId}`);

@@ -16,6 +16,9 @@ export class HttpClient {
     return new Promise((res) => setTimeout(res, ms));
   }
 
+  /**
+   * Sends an HTTP GET request with retry logic.
+   */
   async get(
     url: string,
     options?: Parameters<APIRequestContext["get"]>[1],
@@ -36,6 +39,9 @@ export class HttpClient {
     throw new Error("HttpClient.get: unreachable");
   }
 
+  /**
+   * Sends an HTTP POST request with retry logic.
+   */
   async post(
     url: string,
     options?: Parameters<APIRequestContext["post"]>[1],
@@ -56,6 +62,32 @@ export class HttpClient {
     throw new Error("HttpClient.post: unreachable");
   }
 
+  /**
+   * Sends an HTTP PATCH request with retry logic.
+   */
+  async patch(
+    url: string,
+    options?: Parameters<APIRequestContext["patch"]>[1],
+  ): Promise<APIResponse> {
+    for (let attempt = 0; attempt <= this.retries; attempt++) {
+      try {
+        const res = await this.request.patch(url, options);
+        if (!res.ok() && attempt < this.retries) {
+          await this.sleep(this.retryDelayMs);
+          continue;
+        }
+        return res;
+      } catch (err) {
+        if (attempt === this.retries) throw err;
+        await this.sleep(this.retryDelayMs);
+      }
+    }
+    throw new Error("HttpClient.patch: unreachable");
+  }
+
+  /**
+   * Sends an HTTP DELETE request with retry logic.
+   */
   async delete(
     url: string,
     options?: Parameters<APIRequestContext["delete"]>[1],
