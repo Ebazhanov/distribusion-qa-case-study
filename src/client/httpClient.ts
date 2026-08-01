@@ -1,5 +1,10 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
 
+/**
+ * HttpClient
+ * Small wrapper around Playwright's APIRequestContext providing retries and
+ * a simple fixed-delay retry strategy for transient network or server errors.
+ */
 export class HttpClient {
   constructor(
     private request: APIRequestContext,
