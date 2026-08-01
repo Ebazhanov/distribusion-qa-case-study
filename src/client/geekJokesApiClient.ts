@@ -1,9 +1,10 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { GEEK_JOKES_URL } from "../config";
 import { HttpClient } from "./httpClient";
 
 export class GeekJokesApiClient {
-  private readonly baseUrl = GEEK_JOKES_URL;
+  private readonly baseUrl =
+    process.env.GEEK_JOKES_URL ??
+    "https://geek-jokes.sameerkumar.website/api?format=json";
   private readonly client: HttpClient;
 
   constructor(request: APIRequestContext) {
