@@ -24,7 +24,6 @@
     "@typescript-eslint/parser": "^8.65.0",
     "dotenv": "^17.4.2",
     "eslint": "^10.8.0",
-    "nock": "^13.3.1",
     "prettier": "^3.9.6",
     "typescript": "5.9.3",
     "typescript-eslint": "^8.65.0"
