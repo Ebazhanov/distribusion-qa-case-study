@@ -1,8 +1,4 @@
 import { defineConfig } from "@playwright/test";
-import * as dotenv from "dotenv";
-import path from "path";
-
-dotenv.config({ path: path.resolve(__dirname, ".env") });
 
 const token = process.env.GITHUB_TOKEN || "";
 const baseUrl = process.env.GITHUB_API_BASE || "https://api.github.com";
