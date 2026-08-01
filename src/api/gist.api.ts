@@ -11,8 +11,11 @@ export class GistApi {
 
   /**
    * Creates a new Gist (Public or Secret)
+   * Accepts standard CreateGistPayload or custom/invalid objects for negative testing.
    */
-  async createGist(payload: CreateGistPayload): Promise<APIResponse> {
+  async createGist(
+    payload: CreateGistPayload | Record<string, unknown>,
+  ): Promise<APIResponse> {
     return await this.client.post("/gists", { data: payload });
   }
 
@@ -20,7 +23,7 @@ export class GistApi {
    * Creates a Gist without sending authentication headers (Tests 401 Unauthorized)
    */
   async createGistUnauthenticated(
-    payload: CreateGistPayload,
+    payload: CreateGistPayload | Record<string, unknown>,
   ): Promise<APIResponse> {
     return await this.client.post("/gists", {
       data: payload,

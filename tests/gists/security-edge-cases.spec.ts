@@ -43,7 +43,7 @@ test.describe("GitHub Gists API - Security & Edge Cases", () => {
         files: {},
       };
 
-      const response = await gistApi.createGist(invalidPayload as any);
+      const response = await gistApi.createGist(invalidPayload);
 
       expect(response.status()).toBe(422);
 
