@@ -28,7 +28,7 @@ test.describe("GitHub Gists API Suite", () => {
       const { responseBody, fileName, description, jokeContent } =
         await test.step("Create public gist via API", async () => {
           const { payload, fileName, description, jokeContent } =
-            await generateGistPayload(request);
+            await generateGistPayload(request, { isPublic: true });
 
           const response = await gistApi.createGist(payload);
 
@@ -65,6 +65,39 @@ test.describe("GitHub Gists API Suite", () => {
         expect
           .soft(responseBody.owner?.url)
           .toContain("https://api.github.com/users/");
+      });
+    });
+
+    test("Should successfully create a secret gist and validate public=false flag", async ({
+      request,
+    }) => {
+      // STEP 1: Generate secret payload & execute API call
+      const { responseBody, fileName, description, jokeContent } =
+        await test.step("Create secret gist via API", async () => {
+          const { payload, fileName, description, jokeContent } =
+            await generateGistPayload(request, {
+              isPublic: false,
+              description: "Automated Test - Secret Gist",
+            });
+
+          const response = await gistApi.createGist(payload);
+
+          expect(response.status()).toBe(201);
+
+          const responseBody: GistResponse = await response.json();
+          createdGistIds.push(responseBody.id);
+
+          return { responseBody, fileName, description, jokeContent };
+        });
+
+      // STEP 2: Validate public: false flag & integrity
+      await test.step("Validate secret gist visibility & content integrity", async () => {
+        expect.soft(responseBody.id).toBeTruthy();
+        expect.soft(responseBody.public).toBe(false);
+        expect.soft(responseBody.description).toBe(description);
+
+        expect.soft(responseBody.files[fileName]).toBeDefined();
+        expect.soft(responseBody.files[fileName]?.content).toBe(jokeContent);
       });
     });
   });

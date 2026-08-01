@@ -9,16 +9,26 @@ export interface GeneratedGistData {
   payload: CreateGistPayload;
 }
 
+export interface GistPayloadOptions {
+  isPublic?: boolean;
+  description?: string;
+}
+
 /**
  * Factory utility to assemble Gist test payloads with dynamic metadata.
  */
 export async function generateGistPayload(
   request: APIRequestContext,
+  options: GistPayloadOptions = {},
 ): Promise<GeneratedGistData> {
   const jokeContent = await getRandomJoke(request);
   const randomId = Math.random().toString(36).substring(2, 6);
   const fileName = `sample_${randomId}.md`;
-  const description = "Automated Test Public Gist";
+
+  const isPublic = options.isPublic ?? true;
+  const description =
+    options.description ??
+    (isPublic ? "Automated Test Public Gist" : "Automated Test Secret Gist");
 
   return {
     fileName,
@@ -26,7 +36,7 @@ export async function generateGistPayload(
     jokeContent,
     payload: {
       description,
-      public: true,
+      public: isPublic,
       files: {
         [fileName]: {
           content: jokeContent,

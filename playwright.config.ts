@@ -1,4 +1,10 @@
 import { defineConfig } from "@playwright/test";
+import dotenv from "dotenv";
+
+// Load .env file locally only; skip in CI where secrets are injected natively
+if (!process.env.CI) {
+  dotenv.config();
+}
 
 const token = process.env.GITHUB_TOKEN || "";
 const baseUrl = process.env.GITHUB_API_BASE || "https://api.github.com";
