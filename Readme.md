@@ -14,34 +14,60 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ---
 
 ```text
-🛒 Customer / API Client
-+------------------------------------+
-| 1. Sends payload to create Gist    |
-|    (POST /gists)                   |
-+------------------------------------+
-                  |
-                  v
-🐙 GitHub Gists API
-+------------------------------------+
-| 2. Validates auth & payload,       |
-|    creates resource (201 Created)  |
-+------------------------------------+
-                  |
-                  v
-🧪 Playwright Test Suite
-+------------------------------------+
-| 3. Asserts response schema, id,    |
-|    public flag, files & owner      |
-+------------------------------------+
-                  |
-                  v
-🧹 Teardown Step
-+------------------------------------+
-| 4. Deletes created test Gist       |
-|    (DELETE /gists/{gist_id} -> 204)|
-+------------------------------------+
+┌──────────────────────────────────────────────────────────────────────────┐
+│                      🎭 Playwright API Test Runner                        │
+└──────────────────────────────────────────────────────────────────────────┘
+                                     │
+                        1. POST /gists (Auth & Payload)
+                                     │
+                                     ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│                         🐙 GitHub REST API Gateway                       │
+└──────────────────────────────────────────────────────────────────────────┘
+                         │                        │
+               [201 Created]                   [401/404/422 Errors]
+                         │                        │
+                         ▼                        ▼
+┌──────────────────────────────────┐    ┌──────────────────────────────────┐
+│     ✅ Happy Path Suite          │    │     🛡️ Security & Boundary       │
+├──────────────────────────────────┤    ├──────────────────────────────────┤
+│ • Validates schema & headers     │    │ • Unauthenticated token handling │
+│ • Asserts file payload & owner   │    │ • Non-existent ID handling (404) │
+│ • Checks visibility flags        │    │ • Empty/invalid payload rejection│
+└──────────────────────────────────┘    └──────────────────────────────────┘
+                         │
+         3. Auto Cleanup (DELETE /gists/{id})
+                         │
+                         ▼
+┌──────────────────────────────────────────────────────────────────────────┐
+│                   🧹 Teardown Step: 204 No Content                       │
+└──────────────────────────────────────────────────────────────────────────┘
 ```
+---
 
+```text
+🎭 Test Engine            🐙 GitHub REST API          🧹 Teardown Queue
+───────┬─────────────────────────┬─────────────────────────────┬────────
+       │                         │                             │
+       │ 1. POST /gists          │                             │
+       ├────────────────────────►│                             │
+       │                         │                             │
+       │ 2. 201 Created + JSON   │                             │
+       │◄────────────────────────┤                             │
+       │                         │                             │
+       │ 3. Register Gist ID     │                             │
+       ├──────────────────────────────────────────────────────►│
+       │                         │                             │
+       │ 4. Run Assertions       │                             │
+       │    (Schema, Files, Auth)│                             │
+       │                         │                             │
+       │                         │ 5. DELETE /gists/{gist_id}  │
+       │                         │◄────────────────────────────┤
+       │                         │                             │
+       │                         │ 6. 204 No Content           │
+       │                         ├────────────────────────────►│
+       ▼                         ▼                             ▼
+```
 ---
 
 ## 🧪 Test Cases & Coverage
