@@ -34,4 +34,24 @@ test.describe("GitHub Gists API - Security & Edge Cases", () => {
     expect(body.message).toBe("Not Found");
     expect(body.documentation_url).toContain("https://docs.github.com/rest");
   });
+
+  test.describe("POST /gists - Payload Validation", () => {
+    test("Should reject request with 422 when 'files' object is empty", async () => {
+      const invalidPayload = {
+        description: "Automated Test - Empty Files Payload",
+        public: true,
+        files: {},
+      };
+
+      const response = await gistApi.createGist(invalidPayload as any);
+
+      expect(response.status()).toBe(422);
+
+      const body = await response.json();
+      expect(body.message).toBe("Validation Failed");
+      expect(body.errors).toBeDefined();
+
+      expect(body.documentation_url).toContain("https://docs.github.com");
+    });
+  });
 });

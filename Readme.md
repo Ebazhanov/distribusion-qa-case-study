@@ -64,7 +64,7 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 |:----:| :--- | :--- | :---: | :--- |
 |  ✅  | Unauthorized Access | `POST` `/gists` | `401` | Reject request when Bearer token is missing or invalid |
 |  ✅  | Non-Existent Resource | `GET` `/gists/{gist_id}` | `404` | Handle invalid or non-existent `gist_id` gracefully |
-|  🔲  | Payload Validation | `POST` `/gists` | `422` | Reject request with empty `files` object or missing required parameters |
+|  ✅  | Payload Validation | `POST` `/gists` | `422` | Reject request with empty `files` object or missing required parameters |
 
 
 ## 📚 References & Documentation
