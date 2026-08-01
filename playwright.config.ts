@@ -1,16 +1,5 @@
 import { defineConfig } from "@playwright/test";
-import * as dotenv from "dotenv";
-import path from "path";
-
-// Load environment variables cleanly
-dotenv.config({ path: path.resolve(__dirname, ".env") });
-
-const token = process.env.GITHUB_TOKEN;
-
-// Throw a clear warning if the token is missing locally (great DX!)
-if (!token) {
-  console.warn("⚠️ WARNING: GITHUB_TOKEN is not defined in .env file!");
-}
+import { GITHUB_TOKEN, GITHUB_API_BASE } from "./src/config";
 
 export default defineConfig({
   testDir: "./tests",
@@ -33,7 +22,7 @@ export default defineConfig({
     baseURL: "https://api.github.com",
     extraHTTPHeaders: {
       Accept: "application/vnd.github+json",
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...(GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {}),
       "X-GitHub-Api-Version": "2022-11-28",
       "User-Agent": "Playwright-API-Tests",
     },

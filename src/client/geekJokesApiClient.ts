@@ -1,8 +1,8 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
+import { GEEK_JOKES_URL } from "../config";
 
 export class GeekJokesApiClient {
-  private readonly baseUrl =
-    "https://geek-jokes.sameerkumar.website/api?format=json";
+  private readonly baseUrl = GEEK_JOKES_URL;
 
   constructor(private request: APIRequestContext) {}
 
