@@ -1,4 +1,5 @@
 import { test, expect } from "@playwright/test";
+import nock from 'nock';
 import { GistApi } from "../../src/api/gist.api";
 import { GistResponse } from "../../src/types/gist.types";
 import { generateGistPayload } from "../../src/utils/gistDataFactory";
@@ -9,6 +10,28 @@ test.describe("GitHub Gists API Suite", () => {
 
   test.beforeEach(async ({ request }) => {
     gistApi = new GistApi(request);
+
+    // Disable external network and mock external APIs
+    nock.disableNetConnect();
+
+    // Mock Geek Jokes API
+    nock('https://geek-jokes.sameerkumar.website')
+      .get('/api')
+      .query({ format: 'json' })
+      .reply(200, { joke: 'Mocked geek joke for tests.' });
+
+    // Mock GitHub Gists API create endpoint
+    nock('https://api.github.com')
+      .post('/gists')
+      .reply(201, (uri, requestBody: any) => {
+        return {
+          id: 'mocked-gist-id',
+          public: true,
+          description: requestBody.description,
+          files: requestBody.files,
+          owner: { login: 'mock', id: 1, url: 'https://api.github.com/users/mock' },
+        };
+      });
   });
 
   test.afterEach(async () => {
