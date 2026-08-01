@@ -7,7 +7,3 @@ export const GITHUB_API_BASE =
 export const GEEK_JOKES_URL =
   process.env.GEEK_JOKES_URL ??
   "https://geek-jokes.sameerkumar.website/api?format=json";
-
-export function getAuthHeader() {
-  return GITHUB_TOKEN ? { Authorization: `Bearer ${GITHUB_TOKEN}` } : {};
-}

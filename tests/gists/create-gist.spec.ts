@@ -24,41 +24,48 @@ test.describe("GitHub Gists API Suite", () => {
     test("Should successfully create a public gist and validate schema & response details", async ({
       request,
     }) => {
-      // ARRANGE: Build dynamic test payload using data factory
-      const { payload, fileName, description, jokeContent } =
-        await generateGistPayload(request);
+      // STEP 1: Build payload & execute API call cleanly (returns context without 'let' hoisting)
+      const { responseBody, fileName, description, jokeContent } =
+        await test.step("Create public gist via API", async () => {
+          const { payload, fileName, description, jokeContent } =
+            await generateGistPayload(request);
 
-      // ACT: Send POST request via GistApi service wrapper
-      const response = await gistApi.createGist(payload);
+          const response = await gistApi.createGist(payload);
 
-      // ASSERT: Hard check status code 201 Created
-      expect(response.status()).toBe(201);
+          // Hard check: Ensure status is HTTP 201 Created
+          expect(response.status()).toBe(201);
 
-      const responseBody: GistResponse = await response.json();
-      createdGistIds.push(responseBody.id);
+          const responseBody: GistResponse = await response.json();
+          createdGistIds.push(responseBody.id);
 
-      // 1. Validate 'id'
-      expect.soft(responseBody.id).toBeDefined();
-      expect.soft(typeof responseBody.id).toBe("string");
-      expect.soft(responseBody.id.length).toBeGreaterThan(0);
+          return { responseBody, fileName, description, jokeContent };
+        });
 
-      // 2. Validate 'public' flag & 'description'
-      expect.soft(responseBody.public).toBe(true);
-      expect.soft(responseBody.description).toBe(description);
+      // STEP 2: Validate metadata, file contents, and schema structure
+      await test.step("Validate gist response metadata & owner schema", async () => {
+        // 1. Validate 'id'
+        expect.soft(responseBody.id).toBeDefined();
+        expect.soft(typeof responseBody.id).toBe("string");
+        expect.soft(responseBody.id.length).toBeGreaterThan(0);
 
-      // 3. Validate file structure and content
-      expect.soft(responseBody.files).toBeDefined();
-      expect.soft(responseBody.files[fileName]).toBeDefined();
-      expect.soft(responseBody.files[fileName]?.filename).toBe(fileName);
-      expect.soft(responseBody.files[fileName]?.content).toBe(jokeContent);
+        // 2. Validate 'public' flag & 'description'
+        expect.soft(responseBody.public).toBe(true);
+        expect.soft(responseBody.description).toBe(description);
 
-      // 4. Validate 'owner' object details
-      expect.soft(responseBody.owner).toBeDefined();
-      expect.soft(typeof responseBody.owner?.login).toBe("string");
-      expect.soft(responseBody.owner?.id).toBeGreaterThan(0);
-      expect
-        .soft(responseBody.owner?.url)
-        .toContain("https://api.github.com/users/");
+        // 3. Validate file structure and content
+        expect.soft(responseBody.files).toBeDefined();
+        expect.soft(responseBody.files[fileName]).toBeDefined();
+        expect.soft(responseBody.files[fileName]?.filename).toBe(fileName);
+        expect.soft(responseBody.files[fileName]?.content).toBe(jokeContent);
+
+        // 4. Validate 'owner' object details
+        expect.soft(responseBody.owner).toBeDefined();
+        expect.soft(typeof responseBody.owner?.login).toBe("string");
+        expect.soft(responseBody.owner?.id).toBeGreaterThan(0);
+        expect
+          .soft(responseBody.owner?.url)
+          .toContain("https://api.github.com/users/");
+      });
     });
   });
 });
