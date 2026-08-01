@@ -43,42 +43,17 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 │                   🧹 Teardown Step: 204 No Content                       │
 └──────────────────────────────────────────────────────────────────────────┘
 ```
----
 
-```text
-🎭 Test Engine            🐙 GitHub REST API          🧹 Teardown Queue
-───────┬─────────────────────────┬─────────────────────────────┬────────
-       │                         │                             │
-       │ 1. POST /gists          │                             │
-       ├────────────────────────►│                             │
-       │                         │                             │
-       │ 2. 201 Created + JSON   │                             │
-       │◄────────────────────────┤                             │
-       │                         │                             │
-       │ 3. Register Gist ID     │                             │
-       ├──────────────────────────────────────────────────────►│
-       │                         │                             │
-       │ 4. Run Assertions       │                             │
-       │    (Schema, Files, Auth)│                             │
-       │                         │                             │
-       │                         │ 5. DELETE /gists/{gist_id}  │
-       │                         │◄────────────────────────────┤
-       │                         │                             │
-       │                         │ 6. 204 No Content           │
-       │                         ├────────────────────────────►│
-       ▼                         ▼                             ▼
-```
 ---
 
 ## 🧪 Test Cases & Coverage
-
 ### 1. Critical CRUD Lifecycle Test Cases
 
 | Done | Test Case | Endpoint | Status | Validation Focus |
 | :---: | :--- | :--- | :---: | :--- |
 | ✅ | Create **Public** Gist | `POST` `/gists` | `201` | Validate schema, `id`, `public: true`, file content, and owner details |
 | ✅ | Create **Secret** Gist | `POST` `/gists` | `201` | Validate schema and `public: false` visibility flag |
-| 🔲 | Get Gist by ID | `GET` `/gists/{gist_id}` | `200` | Validate structural response schema and file payload integrity |
+| ✅ | Get Gist by ID | `GET` `/gists/{gist_id}` | `200` | Validate structural response schema and file payload integrity |
 | 🔲 | Update Existing Gist | `PATCH` `/gists/{gist_id}` | `200` | Update description, modify existing files, append new files |
 | ✅ | Delete Gist | `DELETE` `/gists/{gist_id}` | `204` | Confirm resource deletion (Subsequent `GET` returns `404`) |
 
