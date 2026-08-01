@@ -7,19 +7,21 @@ export default defineConfig({
   testDir: "./tests",
   timeout: 30000,
   retries: 0,
-  reporter: [
-    ["list"],
-    ["html", { open: "never" }],
-    ["github"],
-    [
-      "@estruyf/github-actions-reporter",
-      {
-        title: "🎭 Playwright API Test Execution Summary",
-        useDetails: true,
-        showError: true,
-      },
-    ],
-  ],
+  reporter: process.env.CI
+    ? [
+        ["list"],
+        ["html", { open: "never" }],
+        ["github"],
+        [
+          "@estruyf/github-actions-reporter",
+          {
+            title: "🎭 Playwright API Test Execution Summary",
+            useDetails: true,
+            showError: true,
+          },
+        ],
+      ]
+    : [["list"], ["html", { open: "on-failure" }]],
   use: {
     baseURL: baseUrl,
     extraHTTPHeaders: {
