@@ -17,6 +17,18 @@ export class GistApi {
   }
 
   /**
+   * Creates a Gist without sending authentication headers (Tests 401 Unauthorized)
+   */
+  async createGistUnauthenticated(payload: CreateGistPayload): Promise<APIResponse> {
+    return await this.client.post("/gists", {
+      data: payload,
+      headers: {
+        Authorization: "", // Overrides default auth header
+      },
+    });
+  }
+
+  /**
    * Retrieves a Gist by its unique ID
    */
   async getGist(gistId: string): Promise<APIResponse> {

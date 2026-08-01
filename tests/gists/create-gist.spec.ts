@@ -20,11 +20,11 @@ test.describe("GitHub Gists API Suite", () => {
     createdGistIds.length = 0;
   });
 
-  test.describe("POST /gists", () => {
+  test.describe("POST /gists - Happy Path", () => {
     test("Should successfully create a public gist and validate schema & response details", async ({
       request,
     }) => {
-      // STEP 1: Build payload & execute API call cleanly (returns context without 'let' hoisting)
+      // STEP 1: Build payload & execute API call cleanly
       const { responseBody, fileName, description, jokeContent } =
         await test.step("Create public gist via API", async () => {
           const { payload, fileName, description, jokeContent } =
@@ -66,6 +66,22 @@ test.describe("GitHub Gists API Suite", () => {
           .soft(responseBody.owner?.url)
           .toContain("https://api.github.com/users/");
       });
+    });
+  });
+
+  test.describe("POST /gists - Security & Edge Cases", () => {
+    test("Should reject request with 401 when token is missing or invalid", async ({
+      request,
+    }) => {
+      const { payload } = await generateGistPayload(request);
+
+      const response = await gistApi.createGistUnauthenticated(payload);
+
+      expect(response.status()).toBe(401);
+
+      const body = await response.json();
+      expect(body.message).toBe("Requires authentication");
+      expect(body.documentation_url).toContain("https://docs.github.com/rest");
     });
   });
 });
