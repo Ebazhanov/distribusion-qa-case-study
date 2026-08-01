@@ -1,10 +1,4 @@
 import { defineConfig } from "@playwright/test";
-import * as dotenv from "dotenv";
-import path from "path";
-
-// Load .env early for playwright.config.ts evaluation
-// (Playwright injects .env after config is loaded, so we must do it here)
-dotenv.config({ path: path.resolve(__dirname, ".env"), override: false });
 
 const token = process.env.GITHUB_TOKEN || "";
 const baseUrl = process.env.GITHUB_API_BASE || "https://api.github.com";
