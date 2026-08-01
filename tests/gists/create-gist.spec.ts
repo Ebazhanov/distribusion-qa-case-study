@@ -88,4 +88,34 @@ test.describe("GitHub Gists API - Happy Path", () => {
       expect.soft(responseBody.files[fileName]?.content).toBe(jokeContent);
     });
   });
+
+  test("Should successfully delete a gist and verify 404 status on subsequent GET", async ({
+    request,
+  }) => {
+    const gistId =
+      await test.step("Create temporary gist for deletion", async () => {
+        const { payload } = await generateGistPayload(request, {
+          description: "Automated Test - Temporary Gist for Deletion",
+        });
+
+        const response = await gistApi.createGist(payload);
+        expect(response.status()).toBe(201);
+
+        const responseBody: GistResponse = await response.json();
+        return responseBody.id;
+      });
+
+    await test.step("Delete created gist via DELETE request", async () => {
+      const deleteResponse = await gistApi.deleteGist(gistId);
+      expect(deleteResponse.status()).toBe(204);
+    });
+
+    await test.step("Verify deleted gist returns 404 Not Found", async () => {
+      const getResponse = await gistApi.getGist(gistId);
+      expect.soft(getResponse.status()).toBe(404);
+
+      const body = await getResponse.json();
+      expect.soft(body.message).toBe("Not Found");
+    });
+  });
 });
