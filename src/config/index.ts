@@ -1,8 +1,5 @@
-import * as dotenv from "dotenv";
-import path from "path";
-
-// Load .env from repository root for local dev/test
-dotenv.config({ path: path.resolve(__dirname, "../../.env") });
+// Environment variables are injected by Playwright during test runs.
+// If running scripts directly, load .env from your runtime or set env vars.
 
 export const GITHUB_TOKEN = process.env.GITHUB_TOKEN ?? "";
 export const GITHUB_API_BASE =
