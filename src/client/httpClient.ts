@@ -60,9 +60,17 @@ export class HttpClient {
     url: string,
     options?: Parameters<APIRequestContext["delete"]>[1],
   ): Promise<APIResponse> {
+    const mergedOptions = {
+      ...(options ?? {}),
+      headers: {
+        ...(getAuthHeader() as Record<string, string>),
+        ...((options && (options as any).headers) || {}),
+      },
+    };
+
     for (let attempt = 0; attempt <= this.retries; attempt++) {
       try {
-        const res = await this.request.delete(url, options);
+        const res = await this.request.delete(url, mergedOptions);
         if (!res.ok() && attempt < this.retries) {
           await this.sleep(this.retryDelayMs);
           continue;
