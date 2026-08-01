@@ -16,10 +16,15 @@
     "format:check": "prettier --check \"**/*.ts\""
   },
   "devDependencies": {
+    "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.1",
     "@types/node": "^26.1.2",
+    "@typescript-eslint/eslint-plugin": "^8.65.0",
+    "@typescript-eslint/parser": "^8.65.0",
     "dotenv": "^17.4.2",
+    "eslint": "^10.8.0",
     "prettier": "^3.9.6",
-    "typescript": "^7.0.2"
+    "typescript": "5.9.3",
+    "typescript-eslint": "^8.65.0"
   }
 }

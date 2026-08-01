@@ -2,8 +2,8 @@ import { defineConfig } from '@playwright/test';
 import * as dotenv from 'dotenv';
 import path from 'path';
 
-// Load environment variables silently
-dotenv.config({ path: path.resolve(__dirname, '.env'), quiet: true } as any);
+// Load environment variables cleanly without 'as any'
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 const token = process.env.GITHUB_TOKEN;
 
