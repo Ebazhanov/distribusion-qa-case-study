@@ -6,7 +6,7 @@ export class GeekJokesApiClient {
   private readonly baseUrl = GEEK_JOKES_URL;
   private readonly client: HttpClient;
 
-  constructor(private request: APIRequestContext) {
+  constructor(request: APIRequestContext) {
     this.client = new HttpClient(request);
   }
 

@@ -5,7 +5,7 @@ import { HttpClient } from "../client/httpClient";
 export class GistApi {
   private readonly client: HttpClient;
 
-  constructor(private readonly request: APIRequestContext) {
+  constructor(request: APIRequestContext) {
     this.client = new HttpClient(request);
   }
 
