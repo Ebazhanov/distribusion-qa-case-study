@@ -23,7 +23,6 @@ test.describe("GitHub Gists API - GET /gists/{gist_id}", () => {
   test("Should successfully fetch a gist by ID and validate structural schema & payload integrity", async ({
     request,
   }) => {
-    // 1. Arrange: Create target gist
     const { payload, fileName, description, jokeContent } =
       await generateGistPayload(request, {
         isPublic: true,
@@ -36,13 +35,11 @@ test.describe("GitHub Gists API - GET /gists/{gist_id}", () => {
     const createdGist: GistResponse = await createRes.json();
     createdGistIds.push(createdGist.id);
 
-    // 2. Act: Fetch gist by ID
     const getRes = await gistApi.getGist(createdGist.id);
     expect(getRes.status()).toBe(200);
 
     const fetchedGist: GistResponse = await getRes.json();
 
-    // 3. Assert: Metadata, files, and owner schema
     expect.soft(fetchedGist.id).toBe(createdGist.id);
     expect.soft(fetchedGist.description).toBe(description);
     expect.soft(fetchedGist.public).toBe(true);

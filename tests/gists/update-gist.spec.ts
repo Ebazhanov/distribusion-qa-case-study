@@ -23,12 +23,9 @@ test.describe("GitHub Gists API - PATCH /gists/{gist_id}", () => {
   test("Should successfully update description, modify existing file, and append new file", async ({
     request,
   }) => {
-    // 1. Arrange: Create initial Gist
     const { payload, fileName, jokeContent } = await generateGistPayload(
       request,
-      {
-        description: "Initial Gist Description",
-      },
+      { description: "Initial Gist Description" },
     );
 
     const createRes = await gistApi.createGist(payload);
@@ -37,7 +34,6 @@ test.describe("GitHub Gists API - PATCH /gists/{gist_id}", () => {
     const initialGist: GistResponse = await createRes.json();
     createdGistIds.push(initialGist.id);
 
-    // 2. Act: Prepare update payload and send PATCH request
     const updatedDescription = "Updated Gist Description via PATCH";
     const modifiedContent = `${jokeContent} - [MODIFIED]`;
     const newFileName = "appended-file.txt";
@@ -46,12 +42,8 @@ test.describe("GitHub Gists API - PATCH /gists/{gist_id}", () => {
     const patchPayload = {
       description: updatedDescription,
       files: {
-        [fileName]: {
-          content: modifiedContent, // Modify existing file
-        },
-        [newFileName]: {
-          content: newFileContent, // Append new file
-        },
+        [fileName]: { content: modifiedContent },
+        [newFileName]: { content: newFileContent },
       },
     };
 
@@ -60,15 +52,12 @@ test.describe("GitHub Gists API - PATCH /gists/{gist_id}", () => {
 
     const updatedGist: GistResponse = await updateRes.json();
 
-    // 3. Assert: Validate updated description and file modifications
     expect.soft(updatedGist.id).toBe(initialGist.id);
     expect.soft(updatedGist.description).toBe(updatedDescription);
 
-    // Assert modified existing file
     expect.soft(updatedGist.files[fileName]).toBeDefined();
     expect.soft(updatedGist.files[fileName]?.content).toBe(modifiedContent);
 
-    // Assert appended new file
     expect.soft(updatedGist.files[newFileName]).toBeDefined();
     expect.soft(updatedGist.files[newFileName]?.filename).toBe(newFileName);
     expect.soft(updatedGist.files[newFileName]?.content).toBe(newFileContent);

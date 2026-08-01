@@ -9,6 +9,7 @@
   "scripts": {
     "test": "npx playwright test",
     "test:debug": "npx playwright test --debug",
+    "test:ui": "npx playwright test --ui",
     "report": "npx playwright show-report",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
