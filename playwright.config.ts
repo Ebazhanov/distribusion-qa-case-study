@@ -1,7 +1,11 @@
 import { defineConfig } from '@playwright/test';
 import * as dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+// Load environment variables from .env
+dotenv.config({ path: path.resolve(__dirname, '.env') });
+
+const token = process.env.GITHUB_TOKEN;
 
 export default defineConfig({
     testDir: './tests',
@@ -15,8 +19,11 @@ export default defineConfig({
         baseURL: 'https://api.github.com',
         extraHTTPHeaders: {
             'Accept': 'application/vnd.github+json',
-            'Authorization': `Bearer ${process.env.GITHUB_TOKEN}`,
-            'X-GitHub-Api-Version': '2022-11-28'
+            // Only attach Authorization header if GITHUB_TOKEN exists
+            ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
+            'X-GitHub-Api-Version': '2022-11-28',
+            // Required by GitHub API policy
+            'User-Agent': 'Playwright-API-Tests',
         },
     },
 });

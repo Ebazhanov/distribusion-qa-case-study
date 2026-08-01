@@ -11,6 +11,39 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 * **Unified E2E & API Capabilities:** Enables seamless hybrid testing (e.g., seeding data via API and validating UI/workflows within a single test framework).
 * **Native Assertions & Rich Reporting:** Out-of-the-box HTML reporters and strong assertion matchers (`expect(response.ok())`) provide clear execution insights for CI/CD pipelines.
 
+---
+
+```text
+🛒 Customer / API Client
++------------------------------------+
+| 1. Sends payload to create Gist    |
+|    (POST /gists)                   |
++------------------------------------+
+                  |
+                  v
+🐙 GitHub Gists API
++------------------------------------+
+| 2. Validates auth & payload,       |
+|    creates resource (201 Created)  |
++------------------------------------+
+                  |
+                  v
+🧪 Playwright Test Suite
++------------------------------------+
+| 3. Asserts response schema, id,    |
+|    public flag, files & owner      |
++------------------------------------+
+                  |
+                  v
+🧹 Teardown Step
++------------------------------------+
+| 4. Deletes created test Gist       |
+|    (DELETE /gists/{gist_id} -> 204)|
++------------------------------------+
+```
+
+---
+
 ## 🧪 Test Cases & Coverage
 
 ### 1. Critical CRUD Lifecycle Test Cases
