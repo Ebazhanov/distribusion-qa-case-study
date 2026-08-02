@@ -67,8 +67,31 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 |  ✅  | Non-Existent Resource | `GET` `/gists/{gist_id}` | `404` | Handle invalid or non-existent `gist_id` gracefully |
 |  ✅  | Payload Validation | `POST` `/gists` | `422` | Reject request with empty `files` object or missing required parameters |
 
+## 🏗️ Project Architecture & Layout
+
+```text
+├── .github/workflows/
+│   └── playwright.yml          # GitHub Actions CI/CD configuration
+├── src/
+│   ├── api/
+│   │   └── gist.api.ts         # High-level API Page Object / Client
+│   ├── client/
+│   │   ├── httpClient.ts       # Wrapper with retry mechanism
+│   │   └── geekJokesApiClient.ts
+│   ├── types/
+│   │   └── gist.types.ts       # TypeScript interface contracts
+│   └── utils/
+│       ├── gistDataFactory.ts  # Dynamic payload factory
+│       └── jokeHelper.ts       # External fallback helper
+└── tests/
+    └── gists/
+        ├── create-gist.spec.ts         # POST /gists (Public & Secret)
+        ├── delete-gist.spec.ts         # DELETE /gists/{gist_id}
+        ├── get-gist.spec.ts            # GET /gists/{gist_id}
+        ├── update-gist.spec.ts         # PATCH /gists/{gist_id}
+        └── security-edge-cases.spec.ts # Boundary & Auth checks (401, 404, 422)
+```
 
 ## 📚 References & Documentation
-
 * 📖 [GitHub REST API - Gists Documentation](https://docs.github.com/en/rest/gists/gists) — Official GitHub REST API specifications for Gists resource management.
 * 🎭 [Playwright API Testing Docs](https://playwright.dev/docs/api-testing) — Official guide for `APIRequestContext` and HTTP assertions in Playwright.
