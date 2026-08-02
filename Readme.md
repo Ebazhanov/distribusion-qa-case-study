@@ -57,8 +57,6 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 | ✅ | Update Existing Gist | `PATCH` `/gists/{gist_id}` | `200` | Update description, modify existing files, append new files |
 | ✅ | Delete Gist | `DELETE` `/gists/{gist_id}` | `204` | Confirm resource deletion (Subsequent `GET` returns `404`) |
 
----
-
 ### 2. Security & Boundary Test Cases
 
 | Done | Test Case | Endpoint | Status | Validation Focus |
