@@ -36,6 +36,16 @@ jobs:
       - name: Run Linter
         run: npm run lint
 
+      - name: Check Environment Secrets
+        run: |
+          if [ -z "$GITHUB_SECONDARY_TOKEN" ]; then
+            echo "⚠️ GITHUB_SECONDARY_TOKEN secret is missing or empty! Fork tests will be skipped."
+          else
+            echo "✅ GITHUB_SECONDARY_TOKEN secret is present!"
+          fi
+        env:
+          GITHUB_SECONDARY_TOKEN: ${{ secrets.GITHUB_SECONDARY_TOKEN }}
+
       - name: Run Playwright API Tests
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TEST_TOKEN || secrets.GITHUB_TOKEN }}
