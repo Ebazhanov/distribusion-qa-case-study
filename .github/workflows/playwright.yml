@@ -49,7 +49,7 @@ jobs:
       - name: Run Playwright API Tests
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TEST_TOKEN || secrets.GITHUB_TOKEN }}
-          GITHUB_SECONDARY_TOKEN: ${{ secrets.GITHUB_SECONDARY_TOKEN }}
+          GITHUB_SECONDARY_TOKEN: ${{ secrets.GH_SECONDARY_TOKEN }}
         run: npm test
 
       - name: Upload Playwright HTML Report
