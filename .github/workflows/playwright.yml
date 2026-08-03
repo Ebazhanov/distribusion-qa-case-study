@@ -7,7 +7,6 @@ on:
     branches: [ main, master ]
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
-# Grant write permissions so the default GITHUB_TOKEN can perform actions cleanly
 permissions:
   contents: read
   checks: write
@@ -39,8 +38,8 @@ jobs:
 
       - name: Run Playwright API Tests
         env:
-          # If using a custom secret saved in GitHub Settings -> Secrets, use ${{ secrets.GH_TEST_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GH_TEST_TOKEN || secrets.GITHUB_TOKEN }}
+          GITHUB_SECONDARY_TOKEN: ${{ secrets.GITHUB_SECONDARY_TOKEN }}
         run: npm test
 
       - name: Upload Playwright HTML Report
