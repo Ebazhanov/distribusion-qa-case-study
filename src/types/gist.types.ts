@@ -43,17 +43,25 @@ export interface GistOwner {
  */
 export interface GistResponse {
   id: string;
-  node_id?: string;
   url: string;
-  forks_url?: string;
-  commits_url?: string;
-  html_url?: string;
-  public: boolean;
-  created_at?: string;
-  updated_at?: string;
-  description: string;
-  comments?: number;
-  comments_url?: string;
+  forks_url: string;
+  commits_url: string;
+  node_id: string;
+  git_pull_url: string;
+  git_push_url: string;
+  html_url: string;
   files: Record<string, GistFileResponse>;
+  public: boolean;
+  created_at: string;
+  updated_at: string;
+  description: string;
+  comments: number;
+  user: unknown;
+  comments_url: string;
   owner: GistOwner;
+  truncated: boolean;
+  fork_of?: {
+    id: string;
+    url: string;
+  };
 }

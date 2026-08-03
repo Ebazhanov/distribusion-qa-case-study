@@ -47,7 +47,7 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ---
 
 ## 🧪 Test Cases & Coverage
-### 1. Critical CRUD Lifecycle Test Cases
+### 1. Core API Smoke Tests
 
 | Done | Test Case | Endpoint | Status | Validation Focus |
 | :---: | :--- | :--- | :---: | :--- |
@@ -64,6 +64,11 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 |  ✅  | Unauthorized Access | `POST` `/gists` | `401` | Reject request when Bearer token is missing or invalid |
 |  ✅  | Non-Existent Resource | `GET` `/gists/{gist_id}` | `404` | Handle invalid or non-existent `gist_id` gracefully |
 |  ✅  | Payload Validation | `POST` `/gists` | `422` | Reject request with empty `files` object or missing required parameters |
+
+
+## 📚 References & Documentation
+* 📖 [GitHub REST API - Gists Documentation](https://docs.github.com/en/rest/gists/gists) — Official GitHub REST API specifications for Gists resource management.
+* 🎭 [Playwright API Testing Docs](https://playwright.dev/docs/api-testing) — Official guide for `APIRequestContext` and HTTP assertions in Playwright.
 
 ## 🏗️ Project Architecture & Layout
 
@@ -112,6 +117,23 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
   └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
-## 📚 References & Documentation
-* 📖 [GitHub REST API - Gists Documentation](https://docs.github.com/en/rest/gists/gists) — Official GitHub REST API specifications for Gists resource management.
-* 🎭 [Playwright API Testing Docs](https://playwright.dev/docs/api-testing) — Official guide for `APIRequestContext` and HTTP assertions in Playwright.
+## 📂 Test Suite Structure & Execution Strategy
+
+```text
+    tests/
+    ├── 🧪 smoke/               # Build Verification (Critical Path E2E CRUD)
+    │   ├── create-gist.spec.ts # POST /gists (Schema & Payload Validation)
+    │   ├── get-gist.spec.ts    # GET /gists/{id}
+    │   ├── update-gist.spec.ts # PATCH /gists/{id}
+    │   └── delete-gist.spec.ts # DELETE /gists/{id}
+    │
+    ├── 🛡️ regression/          # Edge Cases, Security & Secondary Features
+    │   ├── comments-and-pagination.spec.ts
+    │   ├── fork-gist.spec.ts   # Multi-account & Self-fork checks
+    │   ├── list-gists.spec.ts  # Query parameter validations
+    │   ├── security-edge-cases.spec.ts # 401, 404, 422 validations
+    │   └── star-gist.spec.ts   # PUT / DELETE star endpoints
+    │
+    └── 🔍 exploratory/        # Raw Reference & Prototyping
+        └── gist-api-raw.spec.ts # Unabstracted E2E sandbox script
+```
