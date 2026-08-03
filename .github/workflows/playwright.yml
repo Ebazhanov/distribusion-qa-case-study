@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   test:
-    name: Run API Tests & Quality Checks
+    name: API Tests & Quality Checks
     timeout-minutes: 15
     runs-on: ubuntu-latest
 
