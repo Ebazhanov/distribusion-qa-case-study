@@ -1,4 +1,5 @@
-import { test, expect } from "@playwright/test";
+import { test, expect, APIResponse } from "@playwright/test";
+import { GistResponse } from "../../src/types/gist.types";
 
 test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
   const token = process.env.GITHUB_TOKEN;
@@ -35,7 +36,7 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
   });
 
   test("1. POST - Create a new Gist", async ({ request }) => {
-    let body: any;
+    let body: GistResponse;
     const payload = {
       description: "Raw Playwright Test Gist",
       public: true,
@@ -66,7 +67,7 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
 
   test("2. GET - Retrieve a specific Gist by ID", async ({ request }) => {
     let gistId: string;
-    let body: any;
+    let body: GistResponse;
 
     await test.step("Create a temporary Gist for fetching", async () => {
       const createRes = await request.post("https://api.github.com/gists", {
@@ -77,7 +78,7 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
           files: { "test.md": { content: "# Markdown content" } },
         },
       });
-      const created = await createRes.json();
+      const created: GistResponse = await createRes.json();
       gistId = created.id;
       createdGistIdsPrimary.push(gistId);
     });
@@ -104,7 +105,7 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
     request,
   }) => {
     let gistId: string;
-    let body: any;
+    let body: GistResponse;
 
     await test.step("Create a temporary Gist for updating", async () => {
       const createRes = await request.post("https://api.github.com/gists", {
@@ -115,7 +116,7 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
           files: { "file1.txt": { content: "Initial Content" } },
         },
       });
-      const created = await createRes.json();
+      const created: GistResponse = await createRes.json();
       gistId = created.id;
       createdGistIdsPrimary.push(gistId);
     });
@@ -154,7 +155,7 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
           files: { "star.txt": { content: "Star me!" } },
         },
       });
-      const created = await createRes.json();
+      const created: GistResponse = await createRes.json();
       gistId = created.id;
       createdGistIdsPrimary.push(gistId);
     });
@@ -186,8 +187,8 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
       Authorization: `Bearer ${secondaryToken}`,
     };
 
-    let targetGist: any;
-    let forkedGist: any;
+    let targetGist: GistResponse;
+    let forkedGist: GistResponse;
 
     await test.step("Account 2 creates a public Gist", async () => {
       const createRes = await request.post("https://api.github.com/gists", {
@@ -226,8 +227,8 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
   test("6. POST - Reject self-fork with 422 Unprocessable Entity", async ({
     request,
   }) => {
-    let parentGist: any;
-    let forkRes: any;
+    let parentGist: GistResponse;
+    let forkRes: APIResponse;
 
     await test.step("Create a Gist under the primary account", async () => {
       const createRes = await request.post("https://api.github.com/gists", {
@@ -268,7 +269,7 @@ test.describe("End-to-End CRUD & Actions Flow (Raw)", () => {
           files: { "delete.txt": { content: "To be deleted" } },
         },
       });
-      const created = await createRes.json();
+      const created: GistResponse = await createRes.json();
       gistId = created.id;
     });
 
