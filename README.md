@@ -68,26 +68,48 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ## 🏗️ Project Architecture & Layout
 
 ```text
-├── .github/workflows/
-│   └── playwright.yml          # GitHub Actions CI/CD configuration
-├── src/
-│   ├── api/
-│   │   └── gist.api.ts         # High-level API Page Object / Client
-│   ├── client/
-│   │   ├── httpClient.ts       # Wrapper with retry mechanism
-│   │   └── geekJokesApiClient.ts
-│   ├── types/
-│   │   └── gist.types.ts       # TypeScript interface contracts
-│   └── utils/
-│       ├── gistDataFactory.ts  # Dynamic payload factory
-│       └── jokeHelper.ts       # External fallback helper
-└── tests/
-    └── gists/
-        ├── create-gist.spec.ts         # POST /gists (Public & Secret)
-        ├── delete-gist.spec.ts         # DELETE /gists/{gist_id}
-        ├── get-gist.spec.ts            # GET /gists/{gist_id}
-        ├── update-gist.spec.ts         # PATCH /gists/{gist_id}
-        └── security-edge-cases.spec.ts # Boundary & Auth checks (401, 404, 422)
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                                   TEST EXECUTION LAYER                                 │
+  │                              (tests/gists/*.spec.ts)                                   │
+  │                                                                                        │
+  │  • Spec Suite: POST, GET, PATCH, DELETE, Security & Boundary Cases                     │
+  │  • Pattern: Strict AAA (Arrange ➔ Act ➔ Assert) Isolation                            │
+  │  • Lifecycle Hooks: beforeEach (Instantiate API) & afterEach (Garbage Collection)      │
+  │  • Assertions: Non-blocking Soft Assertions (expect.soft)                              │
+  └──────────────────────────┬────────────────────────────────────────┬────────────────────┘
+                             │                                        │
+           1. Requests Test  │                                        │ 3. Executes API Call
+              Data Payload   │                                        │    with Payload
+                             ▼                                        ▼
+  ┌────────────────────────────────────────┐       ┌───────────────────────────────────────┐
+  │          DATA & UTILITY LAYER          │       │           API CLIENT LAYER            │
+  │        (src/utils/gistDataFactory)     │       │          (src/api/gist.api)           │
+  │                                        │       │                                       │
+  │  • Generates dynamic payloads          │       │  • Encapsulates API domain routes     │
+  │  • Integrates external joke API        │       │  • Applies TypeScript Payload Types   │
+  │  • Fallback to deterministic local data│       │  • Handles header overrides (e.g. 401)│
+  └──────────────────────────┬─────────────┘       └──────────────────┬────────────────────┘
+                             │                                        │
+            2. Returns Type- │                                        │ 4. Passes Request
+               Safe Payload  │                                        │    Config & Params
+                             └───────────────────┐                    │
+                                                 │                    │
+                                                 ▼                    ▼
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                                  CORE HTTP CLIENT LAYER                                │
+  │                                (src/client/httpClient)                                 │
+  │                                                                                        │
+  │  • Wrapper around Playwright APIRequestContext                                         │
+  │  • Built-in Retry Mechanism (Exponential / Fixed Backoff)                              │
+  │  • Methods: get(), post(), patch(), delete()                                           │
+  └──────────────────────────────────────────┬─────────────────────────────────────────────┘
+                                             │
+                                             │ 5. Transmits Over Wire (HTTPS)
+                                             ▼
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+  │                                  GITHUB REST API V3                                    │
+  │                             (https://api.github.com/gists)                             │
+  └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ## 📚 References & Documentation
