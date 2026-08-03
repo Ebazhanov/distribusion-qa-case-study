@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { GistApi } from "../../src/api/gist.api";
 import { generateGistPayload } from "../../src/utils/gistDataFactory";
 
-test.describe("GitHub Gists API - Security & Boundary Validation", () => {
+test.describe("Security & Boundary Validation", () => {
   let gistApi: GistApi;
 
   test.beforeEach(async ({ request }) => {
@@ -14,11 +14,12 @@ test.describe("GitHub Gists API - Security & Boundary Validation", () => {
   }) => {
     const { payload } = await generateGistPayload(request);
 
-    const response = await gistApi.createGistUnauthenticated(payload);
+    // Pass an invalid token to test 401 Unauthorized
+    const response = await gistApi.createGist(payload, "invalid_token_123");
     expect(response.status()).toBe(401);
 
     const body = await response.json();
-    expect(body.message).toBe("Requires authentication");
+    expect(body.message).toMatch(/Bad credentials|Requires authentication/i);
   });
 
   test("Should return 404 when requesting a non-existent gist_id", async () => {

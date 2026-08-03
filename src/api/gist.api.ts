@@ -1,47 +1,37 @@
 import { APIRequestContext, APIResponse } from "@playwright/test";
-import { CreateGistPayload } from "../types/gist.types";
 import { HttpClient } from "../client/httpClient";
+import { CreateGistPayload } from "../types/gist.types";
 
+/**
+ * API Wrapper service for GitHub Gists endpoints.
+ */
 export class GistApi {
-  private readonly client: HttpClient;
+  private client: HttpClient;
 
   constructor(request: APIRequestContext) {
     this.client = new HttpClient(request);
   }
 
   /**
-   * Creates a new Gist (Public or Secret).
-   * Accepts standard CreateGistPayload or custom/invalid objects for negative testing.
+   * Creates a new public or secret Gist. Accepts an optional token override.
    */
   async createGist(
     payload: CreateGistPayload | Record<string, unknown>,
+    token?: string,
   ): Promise<APIResponse> {
-    return await this.client.post("/gists", { data: payload });
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+    return await this.client.post("/gists", { data: payload, headers });
   }
 
   /**
-   * Creates a Gist without sending authentication headers (Tests 401 Unauthorized).
-   */
-  async createGistUnauthenticated(
-    payload: CreateGistPayload | Record<string, unknown>,
-  ): Promise<APIResponse> {
-    return await this.client.post("/gists", {
-      data: payload,
-      headers: {
-        Authorization: "", // Overrides default auth header
-      },
-    });
-  }
-
-  /**
-   * Retrieves a Gist by its unique ID.
+   * Retrieves a specific Gist by its unique ID.
    */
   async getGist(gistId: string): Promise<APIResponse> {
     return await this.client.get(`/gists/${gistId}`);
   }
 
   /**
-   * Updates an existing Gist description or files via PATCH.
+   * Updates an existing Gist description or file contents.
    */
   async updateGist(
     gistId: string,
@@ -51,9 +41,50 @@ export class GistApi {
   }
 
   /**
-   * Deletes a Gist by its unique ID.
+   * Deletes a Gist by its unique ID. Accepts an optional secondary token for teardown.
    */
-  async deleteGist(gistId: string): Promise<APIResponse> {
-    return await this.client.delete(`/gists/${gistId}`);
+  async deleteGist(gistId: string, token?: string): Promise<APIResponse> {
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+    return await this.client.delete(`/gists/${gistId}`, { headers });
+  }
+
+  /**
+   * Stars a Gist for the authenticated user.
+   */
+  async starGist(gistId: string): Promise<APIResponse> {
+    return await this.client.put(`/gists/${gistId}/star`);
+  }
+
+  /**
+   * Checks if a Gist is starred (204 = Starred, 404 = Not Starred).
+   */
+  async checkIsGistStarred(gistId: string): Promise<APIResponse> {
+    return await this.client.get(`/gists/${gistId}/star`);
+  }
+
+  /**
+   * Unstars a Gist for the authenticated user.
+   */
+  async unstarGist(gistId: string): Promise<APIResponse> {
+    return await this.client.delete(`/gists/${gistId}/star`);
+  }
+
+  /**
+   * Forks a target Gist. Accepts an optional secondary account token.
+   */
+  async forkGist(gistId: string, token?: string): Promise<APIResponse> {
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+    return await this.client.post(`/gists/${gistId}/forks`, { headers });
+  }
+
+  /**
+   * Lists Gists for the authenticated user with optional pagination parameters.
+   */
+  async listUserGists(params?: {
+    per_page?: number;
+    page?: number;
+    since?: string;
+  }): Promise<APIResponse> {
+    return await this.client.get("/gists", { params });
   }
 }
