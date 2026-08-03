@@ -47,7 +47,7 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ---
 
 ## 🧪 Test Cases & Coverage
-### 1. Critical CRUD Lifecycle Test Cases
+### 1. Core API Smoke Tests
 
 | Done | Test Case | Endpoint | Status | Validation Focus |
 | :---: | :--- | :--- | :---: | :--- |

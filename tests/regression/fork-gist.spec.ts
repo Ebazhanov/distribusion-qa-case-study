@@ -58,12 +58,25 @@ test.describe("POST /gists/{gist_id}/forks", () => {
     });
   });
 
-  test("Should fork a public third-party gist", async () => {
-    const targetGistId = "6178822";
+  test("Should fork a public target gist dynamically", async ({ request }) => {
+    test.skip(!secondaryToken, "Requires GITHUB_SECONDARY_TOKEN env variable");
+    let targetGist: GistResponse;
     let forkedGist: GistResponse;
 
-    await test.step("Fork public third-party Gist", async () => {
-      const forkRes = await gistApi.forkGist(targetGistId);
+    await test.step("Create a dynamic public Gist under secondary account", async () => {
+      const { payload } = await generateGistPayload(request, {
+        isPublic: true,
+        description: "Automated Test - Dynamic Third-Party Fork Target",
+      });
+      // Create Gist using secondary token so primary account can fork it
+      const createRes = await gistApi.createGist(payload, secondaryToken);
+      expect(createRes.status()).toBe(201);
+      targetGist = await createRes.json();
+      createdGistIdsSecondary.push(targetGist.id);
+    });
+
+    await test.step("Fork public Gist using primary account", async () => {
+      const forkRes = await gistApi.forkGist(targetGist.id);
       expect(forkRes.status()).toBe(201);
       forkedGist = await forkRes.json();
       createdGistIdsPrimary.push(forkedGist.id);
@@ -71,7 +84,10 @@ test.describe("POST /gists/{gist_id}/forks", () => {
 
     await test.step("Verify forked Gist details", async () => {
       expect.soft(forkedGist.id).toBeDefined();
-      expect.soft(forkedGist.id).not.toBe(targetGistId);
+      expect.soft(forkedGist.id).not.toBe(targetGist.id);
+      expect
+        .soft(Object.keys(forkedGist.files))
+        .toEqual(Object.keys(targetGist.files));
     });
   });
 

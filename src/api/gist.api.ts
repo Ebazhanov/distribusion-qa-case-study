@@ -13,12 +13,14 @@ export class GistApi {
   }
 
   /**
-   * Creates a new public or secret Gist.
+   * Creates a new public or secret Gist. Accepts an optional token override.
    */
   async createGist(
     payload: CreateGistPayload | Record<string, unknown>,
+    token?: string,
   ): Promise<APIResponse> {
-    return await this.client.post("/gists", { data: payload });
+    const headers = token ? { Authorization: `Bearer ${token}` } : undefined;
+    return await this.client.post("/gists", { data: payload, headers });
   }
 
   /**
