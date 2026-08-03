@@ -3,7 +3,7 @@ import { GistApi } from "../../src/api/gist.api";
 import { GistResponse } from "../../src/types/gist.types";
 import { generateGistPayload } from "../../src/utils/gistDataFactory";
 
-test.describe("GitHub Gists API - DELETE /gists/{gist_id}", () => {
+test.describe("DELETE /gists/{gist_id}", () => {
   let gistApi: GistApi;
 
   test.beforeEach(async ({ request }) => {

@@ -63,6 +63,29 @@ export class HttpClient {
   }
 
   /**
+   * Sends an HTTP PUT request with retry logic.
+   */
+  async put(
+    url: string,
+    options?: Parameters<APIRequestContext["put"]>[1],
+  ): Promise<APIResponse> {
+    for (let attempt = 0; attempt <= this.retries; attempt++) {
+      try {
+        const res = await this.request.put(url, options);
+        if (!res.ok() && attempt < this.retries) {
+          await this.sleep(this.retryDelayMs);
+          continue;
+        }
+        return res;
+      } catch (err) {
+        if (attempt === this.retries) throw err;
+        await this.sleep(this.retryDelayMs);
+      }
+    }
+    throw new Error("HttpClient.put: unreachable");
+  }
+
+  /**
    * Sends an HTTP PATCH request with retry logic.
    */
   async patch(

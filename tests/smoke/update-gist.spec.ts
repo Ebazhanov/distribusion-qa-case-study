@@ -3,7 +3,7 @@ import { GistApi } from "../../src/api/gist.api";
 import { GistResponse } from "../../src/types/gist.types";
 import { generateGistPayload } from "../../src/utils/gistDataFactory";
 
-test.describe("GitHub Gists API - PATCH /gists/{gist_id}", () => {
+test.describe("PATCH /gists/{gist_id}", () => {
   let gistApi: GistApi;
   const createdGistIds: string[] = [];
 

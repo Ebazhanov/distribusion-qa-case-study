@@ -2,7 +2,7 @@ import { test, expect } from "@playwright/test";
 import { GistApi } from "../../src/api/gist.api";
 import { generateGistPayload } from "../../src/utils/gistDataFactory";
 
-test.describe("GitHub Gists API - Security & Boundary Validation", () => {
+test.describe("Security & Boundary Validation", () => {
   let gistApi: GistApi;
 
   test.beforeEach(async ({ request }) => {
