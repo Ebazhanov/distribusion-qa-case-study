@@ -14,7 +14,6 @@ test.describe("Comments & Query Parameters", () => {
 
   test.afterEach(async () => {
     if (createdGistIds.length === 0) return;
-
     await Promise.allSettled(
       createdGistIds.map((id) => gistApi.deleteGist(id)),
     );
@@ -34,7 +33,6 @@ test.describe("Comments & Query Parameters", () => {
       });
       const createRes = await gistApi.createGist(payload);
       expect(createRes.status()).toBe(201);
-
       gist = await createRes.json();
       createdGistIds.push(gist.id);
     });
@@ -48,10 +46,8 @@ test.describe("Comments & Query Parameters", () => {
         },
       );
       expect(createCommentRes.status()).toBe(201);
-
       const commentBody = await createCommentRes.json();
       commentId = commentBody.id;
-
       expect.soft(commentBody.id).toBeDefined();
       expect.soft(commentBody.body).toBe(commentContent);
     });
@@ -64,7 +60,6 @@ test.describe("Comments & Query Parameters", () => {
         },
       );
       expect(getCommentsRes.status()).toBe(200);
-
       const commentsList = await getCommentsRes.json();
       expect.soft(Array.isArray(commentsList)).toBe(true);
       expect
@@ -97,7 +92,6 @@ test.describe("Comments & Query Parameters", () => {
           page: 1,
         },
       });
-
       expect(response.status()).toBe(200);
       gistsArray = await response.json();
     });

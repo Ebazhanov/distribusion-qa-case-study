@@ -31,7 +31,6 @@ test.describe("POST /gists/{gist_id}/forks", () => {
     request,
   }) => {
     test.skip(!secondaryToken, "Requires GITHUB_SECONDARY_TOKEN env variable");
-
     let targetGist: GistResponse;
     let forkedGist: GistResponse;
 
@@ -40,10 +39,8 @@ test.describe("POST /gists/{gist_id}/forks", () => {
         isPublic: true,
         description: "Automated Test - Cross Account Fork Target",
       });
-
       const createRes = await gistApi.createGist(payload);
       expect(createRes.status()).toBe(201);
-
       targetGist = await createRes.json();
       createdGistIdsPrimary.push(targetGist.id);
     });
@@ -51,7 +48,6 @@ test.describe("POST /gists/{gist_id}/forks", () => {
     await test.step("Fork target Gist using secondary account token", async () => {
       const forkRes = await gistApi.forkGist(targetGist.id, secondaryToken);
       expect(forkRes.status()).toBe(201);
-
       forkedGist = await forkRes.json();
       createdGistIdsSecondary.push(forkedGist.id);
     });
@@ -69,7 +65,6 @@ test.describe("POST /gists/{gist_id}/forks", () => {
     await test.step("Fork public third-party Gist", async () => {
       const forkRes = await gistApi.forkGist(targetGistId);
       expect(forkRes.status()).toBe(201);
-
       forkedGist = await forkRes.json();
       createdGistIdsPrimary.push(forkedGist.id);
     });
@@ -89,10 +84,8 @@ test.describe("POST /gists/{gist_id}/forks", () => {
       const { payload } = await generateGistPayload(request, {
         description: "Automated Test - Self Fork Validation",
       });
-
       const createRes = await gistApi.createGist(payload);
       expect(createRes.status()).toBe(201);
-
       parentGist = await createRes.json();
       createdGistIdsPrimary.push(parentGist.id);
     });
@@ -100,7 +93,6 @@ test.describe("POST /gists/{gist_id}/forks", () => {
     await test.step("Attempt to fork own Gist and verify 422 error response", async () => {
       const forkRes = await gistApi.forkGist(parentGist.id);
       expect(forkRes.status()).toBe(422);
-
       const errorBody = await forkRes.json();
       expect(errorBody.message).toMatch(/cannot fork your own gist/i);
     });
