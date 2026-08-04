@@ -1,0 +1,35 @@
+Title,Automation Candidate,Feature/Component,Obsolete,Preconditions,Priority,References,Section,Section Description,Steps (Expected Result),Steps (Step),Test Suite,Type,Version
+Registration with 1 Borrower - no offer,,,No,,Critical,,Registration Step7,,"1. - Header
+ + Smava Logo
+ + Telefon number
+ + TV Image
+- No offer block
+ + Information text for no offer
+ + Button to get a second borrowe
+ + Bon - Kredit or Creditmaxx
+ + Help block with Telefon number and email
+- Footer : AGB, Datenschutz, Impressum, Secure Server Logo",1. Registration with 1 Borrower - no offer,Not Automated,Functional,
+Registration with 1 Borrower - get pending offer,,,No,,Critical,,Registration Step7,,Steps (Expected Result),1. Registration with 1 Borrower - get pending offer,Not Automated,Functional,
+Registration with 1 Borrower - get offer list,,,No,,Critical,,Registration Step7,,"1. Registration with 1 Borrower - no offer
+Expected Result:- Header
++ Smava Logo
++ Telefon number
++ TV Image
+- Offer block
++ Information text that user get offer
++ Question contact with telefon number and email
++ offerlist
++ Auszahlungschance, Banklogo, Monatsrate, Nettokreditbetrag(Duration), Effek. Jahreszin
++ Button borrower may see in the offerlist
++ Logo Antrag per Post verschickt
++ Antrag öffnen ( AGB ansehen)
++ Videoident
++ Unterlagen Upload möglich
++ offer with info that request are pending
+- Next steps block
++ 4 steps to get the credit
++ Help text with telefon number and email
+- Footer : AGB, Datenschutz, Impressum, Secure Server Logo",1. Registration with 1 Borrower - get offer list,Not Automated,Functional,
+Registration with 1 Borrower - no offer . Phone,,,No,,Critical,,Registration Step7,,,1. Registration with 1 Borrower - no offer . Phone,Not Automated,Functional,
+Registration with 1 Borrower - get pending offer - Phone,,,No,,Critical,,Registration Step7,,,1. Registration with 1 Borrower - get pending offer - Phone,Not Automated,Functional,
+Registration with 1 Borrower - get offer list - Phone,,,No,,Critical,,Registration Step7,,,1. Registration with 1 Borrower - get offer list - Phone,Not Automated,Functional,
