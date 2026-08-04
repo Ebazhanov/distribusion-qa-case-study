@@ -23,43 +23,56 @@ test.describe("PATCH /gists/{gist_id}", () => {
   test("Should successfully update description, modify existing file, and append new file", async ({
     request,
   }) => {
-    const { payload, fileName, jokeContent } = await generateGistPayload(
-      request,
-      { description: "Initial Gist Description" },
-    );
-
-    const createRes = await gistApi.createGist(payload);
-    expect(createRes.status()).toBe(201);
-
-    const initialGist: GistResponse = await createRes.json();
-    createdGistIds.push(initialGist.id);
+    let initialGist: GistResponse;
+    let updatedGist: GistResponse;
+    let fileName: string;
+    let modifiedContent: string;
 
     const updatedDescription = "Updated Gist Description via PATCH";
-    const modifiedContent = `${jokeContent} - [MODIFIED]`;
     const newFileName = "appended-file.txt";
     const newFileContent = "This is a newly appended file in the Gist.";
 
-    const patchPayload = {
-      description: updatedDescription,
-      files: {
-        [fileName]: { content: modifiedContent },
-        [newFileName]: { content: newFileContent },
-      },
-    };
+    await test.step("Arrange: Create initial Gist for updating", async () => {
+      const payloadData = await generateGistPayload(request, {
+        description: "Initial Gist Description",
+      });
+      fileName = payloadData.fileName;
+      modifiedContent = `${payloadData.jokeContent} - [MODIFIED]`;
 
-    const updateRes = await gistApi.updateGist(initialGist.id, patchPayload);
-    expect(updateRes.status()).toBe(200);
+      const createRes = await gistApi.createGist(payloadData.payload);
+      expect(createRes.status()).toBe(201);
 
-    const updatedGist: GistResponse = await updateRes.json();
+      initialGist = await createRes.json();
+      createdGistIds.push(initialGist.id);
+    });
 
-    expect.soft(updatedGist.id).toBe(initialGist.id);
-    expect.soft(updatedGist.description).toBe(updatedDescription);
+    await test.step("Act: Update description, modify existing file, and append a new file via PATCH", async () => {
+      const patchPayload = {
+        description: updatedDescription,
+        files: {
+          [fileName]: { content: modifiedContent },
+          [newFileName]: { content: newFileContent },
+        },
+      };
 
-    expect.soft(updatedGist.files[fileName]).toBeDefined();
-    expect.soft(updatedGist.files[fileName]?.content).toBe(modifiedContent);
+      const updateRes = await gistApi.updateGist(initialGist.id, patchPayload);
+      expect(updateRes.status()).toBe(200);
 
-    expect.soft(updatedGist.files[newFileName]).toBeDefined();
-    expect.soft(updatedGist.files[newFileName]?.filename).toBe(newFileName);
-    expect.soft(updatedGist.files[newFileName]?.content).toBe(newFileContent);
+      updatedGist = await updateRes.json();
+    });
+
+    await test.step("Assert: Validate updated description, modified content, and appended file schema", async () => {
+      expect.soft(updatedGist.id).toBe(initialGist.id);
+      expect.soft(updatedGist.description).toBe(updatedDescription);
+
+      // Verify modified existing file
+      expect.soft(updatedGist.files[fileName]).toBeDefined();
+      expect.soft(updatedGist.files[fileName]?.content).toBe(modifiedContent);
+
+      // Verify appended new file
+      expect.soft(updatedGist.files[newFileName]).toBeDefined();
+      expect.soft(updatedGist.files[newFileName]?.filename).toBe(newFileName);
+      expect.soft(updatedGist.files[newFileName]?.content).toBe(newFileContent);
+    });
   });
 });

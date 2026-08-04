@@ -23,34 +23,48 @@ test.describe("GET /gists/{gist_id}", () => {
   test("Should successfully fetch a gist by ID and validate structural schema & payload integrity", async ({
     request,
   }) => {
-    const { payload, fileName, description, jokeContent } =
-      await generateGistPayload(request, {
+    let createdGist: GistResponse;
+    let fetchedGist: GistResponse;
+    let fileName: string;
+    let description: string;
+    let jokeContent: string;
+
+    await test.step("Arrange: Create a temporary target Gist", async () => {
+      const payloadData = await generateGistPayload(request, {
         isPublic: true,
         description: "Automated Test - Fetch Gist by ID",
       });
+      fileName = payloadData.fileName;
+      description = payloadData.description;
+      jokeContent = payloadData.jokeContent;
 
-    const createRes = await gistApi.createGist(payload);
-    expect(createRes.status()).toBe(201);
+      const createRes = await gistApi.createGist(payloadData.payload);
+      expect(createRes.status()).toBe(201);
 
-    const createdGist: GistResponse = await createRes.json();
-    createdGistIds.push(createdGist.id);
+      createdGist = await createRes.json();
+      createdGistIds.push(createdGist.id);
+    });
 
-    const getRes = await gistApi.getGist(createdGist.id);
-    expect(getRes.status()).toBe(200);
+    await test.step("Act: Fetch the target Gist by ID", async () => {
+      const getRes = await gistApi.getGist(createdGist.id);
+      expect(getRes.status()).toBe(200);
 
-    const fetchedGist: GistResponse = await getRes.json();
+      fetchedGist = await getRes.json();
+    });
 
-    expect.soft(fetchedGist.id).toBe(createdGist.id);
-    expect.soft(fetchedGist.description).toBe(description);
-    expect.soft(fetchedGist.public).toBe(true);
+    await test.step("Assert: Validate fetched Gist metadata, file content, and owner schema", async () => {
+      expect.soft(fetchedGist.id).toBe(createdGist.id);
+      expect.soft(fetchedGist.description).toBe(description);
+      expect.soft(fetchedGist.public).toBe(true);
 
-    expect.soft(fetchedGist.files[fileName]?.filename).toBe(fileName);
-    expect.soft(fetchedGist.files[fileName]?.content).toBe(jokeContent);
+      expect.soft(fetchedGist.files[fileName]?.filename).toBe(fileName);
+      expect.soft(fetchedGist.files[fileName]?.content).toBe(jokeContent);
 
-    expect.soft(typeof fetchedGist.owner?.login).toBe("string");
-    expect.soft(fetchedGist.owner?.id).toBeGreaterThan(0);
-    expect
-      .soft(fetchedGist.owner?.url)
-      .toContain("https://api.github.com/users/");
+      expect.soft(typeof fetchedGist.owner?.login).toBe("string");
+      expect.soft(fetchedGist.owner?.id).toBeGreaterThan(0);
+      expect
+        .soft(fetchedGist.owner?.url)
+        .toContain("https://api.github.com/users/");
+    });
   });
 });

@@ -13,25 +13,30 @@ test.describe("DELETE /gists/{gist_id}", () => {
   test("Should successfully delete a gist and verify 404 status on subsequent GET", async ({
     request,
   }) => {
-    // 1. Arrange: Create temporary gist for deletion
-    const { payload } = await generateGistPayload(request, {
-      description: "Automated Test - Temporary Gist for Deletion",
+    let createdGist: GistResponse;
+
+    await test.step("Arrange: Create a temporary Gist for deletion", async () => {
+      const { payload } = await generateGistPayload(request, {
+        description: "Automated Test - Temporary Gist for Deletion",
+      });
+
+      const createRes = await gistApi.createGist(payload);
+      expect(createRes.status()).toBe(201);
+
+      createdGist = await createRes.json();
     });
 
-    const createRes = await gistApi.createGist(payload);
-    expect(createRes.status()).toBe(201);
+    await test.step("Act: Delete the created Gist by ID", async () => {
+      const deleteRes = await gistApi.deleteGist(createdGist.id);
+      expect(deleteRes.status()).toBe(204);
+    });
 
-    const createdGist: GistResponse = await createRes.json();
+    await test.step("Assert: Verify subsequent GET returns 404 Not Found", async () => {
+      const getRes = await gistApi.getGist(createdGist.id);
+      expect.soft(getRes.status()).toBe(404);
 
-    // 2. Act: Delete created gist
-    const deleteRes = await gistApi.deleteGist(createdGist.id);
-    expect(deleteRes.status()).toBe(204);
-
-    // 3. Assert: Verify subsequent GET returns 404 Not Found
-    const getRes = await gistApi.getGist(createdGist.id);
-    expect.soft(getRes.status()).toBe(404);
-
-    const errorBody = await getRes.json();
-    expect.soft(errorBody.message).toBe("Not Found");
+      const errorBody = await getRes.json();
+      expect.soft(errorBody.message).toBe("Not Found");
+    });
   });
 });
