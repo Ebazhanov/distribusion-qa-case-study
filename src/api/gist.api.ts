@@ -87,4 +87,39 @@ export class GistApi {
   }): Promise<APIResponse> {
     return await this.client.get("/gists", { params });
   }
+
+  /**
+   * Retrieves the list of gists starred by the authenticated user.
+   */
+  async getStarredGists(): Promise<APIResponse> {
+    return await this.client.get("/gists/starred");
+  }
+
+  /**
+   * Retrieves all commits/revisions for a specific Gist.
+   */
+  async getGistCommits(gistId: string): Promise<APIResponse> {
+    return await this.client.get(`/gists/${gistId}/commits`);
+  }
+
+  /**
+   * Retrieves the list of forks for a specific Gist.
+   */
+  async getGistForks(gistId: string): Promise<APIResponse> {
+    return await this.client.get(`/gists/${gistId}/forks`);
+  }
+
+  /**
+   * Retrieves a specific historical revision of a Gist by its SHA.
+   */
+  async getGistRevision(gistId: string, sha: string): Promise<APIResponse> {
+    return await this.client.get(`/gists/${gistId}/${sha}`);
+  }
+
+  /**
+   * Lists public gists for a specific GitHub user.
+   */
+  async getUserGists(username: string): Promise<APIResponse> {
+    return await this.client.get(`/users/${username}/gists`);
+  }
 }
