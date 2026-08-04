@@ -11,7 +11,7 @@ const baseUrl = process.env.GITHUB_API_BASE || "https://api.github.com";
 
 export default defineConfig({
   testDir: "./tests",
-  timeout: 30000,
+  timeout: 10000,
   retries: 0,
   reporter: process.env.CI
     ? [
@@ -28,6 +28,18 @@ export default defineConfig({
         ],
       ]
     : [["list"], ["html", { open: "on-failure" }]],
+
+  projects: [
+    {
+      name: "Smoke",
+      testDir: "./tests/smoke",
+    },
+    {
+      name: "Regression",
+      testDir: "./tests/regression",
+    },
+  ],
+
   use: {
     baseURL: baseUrl,
     extraHTTPHeaders: {
