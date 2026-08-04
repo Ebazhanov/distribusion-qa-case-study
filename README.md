@@ -5,6 +5,7 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ---
 
 [![API Regression Suite](https://github.com/Ebazhanov/distribusion-qa-case-study/actions/workflows/playwright.yml/badge.svg)](https://github.com/Ebazhanov/distribusion-qa-case-study/actions/workflows/playwright.yml)
+![Playwright](https://img.shields.io/badge/Playwright-v1.40+-2EAD33?style=flat&logo=playwright&logoColor=white)
 
 ### 💡 Why Playwright for API Testing?
 * **Zero Additional Dependencies:** Built-in HTTP client (`APIRequestContext`) eliminates the need for external libraries like Axios or Supertest paired with separate runners (Jest/Mocha).
@@ -65,10 +66,13 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 |  ✅  | Non-Existent Resource | `GET` `/gists/{gist_id}` | `404` | Handle invalid or non-existent `gist_id` gracefully |
 |  ✅  | Payload Validation | `POST` `/gists` | `422` | Reject request with empty `files` object or missing required parameters |
 
+---
 
 ## 📚 References & Documentation
 * 📖 [GitHub REST API - Gists Documentation](https://docs.github.com/en/rest/gists/gists) — Official GitHub REST API specifications for Gists resource management.
 * 🎭 [Playwright API Testing Docs](https://playwright.dev/docs/api-testing) — Official guide for `APIRequestContext` and HTTP assertions in Playwright.
+
+--- 
 
 ## 🏗️ Project Architecture & Layout
 
@@ -116,6 +120,8 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
   │                             (https://api.github.com/gists)                             │
   └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+--- 
 
 ## 📂 Test Suite Structure & Execution Strategy
 
