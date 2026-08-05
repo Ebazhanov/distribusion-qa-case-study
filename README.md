@@ -113,9 +113,9 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 
 ---
 
-## 🎯 Deep Dive: Test Strategy & QA Architecture
+## 🎯 Test Strategy & QA Architecture
 
-### 1. Testing Objectives & Philosophy
+### 1. Testing Objectives
 The primary objective of this framework is to provide **fast, reliable, and isolated feedback** on the health and contract compliance of the GitHub Gists API.
 
 * **Strict Test Isolation (AAA Pattern):** Every test independently creates its own preconditions (Arrange), executes the target action (Act), and asserts outcomes (Assert).
@@ -125,7 +125,7 @@ The primary objective of this framework is to provide **fast, reliable, and isol
 
 ---
 
-### 2. Test Execution Tiering
+### 2. Test Execution
 
 ```text
                /\
