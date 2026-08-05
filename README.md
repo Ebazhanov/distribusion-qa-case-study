@@ -14,7 +14,7 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 
 ---
 
-## 🧪 Test Strategy & Coverage Matri
+## 🧪 Test Strategy & Coverage Matrix
 
 ### 1. Core API Smoke Tests (Happy Path)
 | Status | Test Case | Endpoint | Code | Validation Focus |
@@ -34,13 +34,14 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 | ✅ | Multi-Account Fork | `POST /gists/{id}/forks` | `201` | Account 1 forks Gist created by Account 2 |
 | ✅ | Gist Comments | `POST/GET /gists/{id}/comments` | `201/200` | Create and retrieve comment threads |
 
-### 3. Security & Boundary Tests (Negative)
-| Status | Test Case | Endpoint | Code | Validation Focus |
+### 3. Security, Boundary & Mocking Tests (Negative)
+| Status | Test Case | Endpoint / Strategy | Code | Validation Focus |
 | :---: | :--- | :--- | :---: | :--- |
 | ✅ | Unauthorized Access | `POST /gists` | `401` | Rejection on missing or malformed Bearer token |
 | ✅ | Non-Existent Resource | `GET /gists/{invalid_id}` | `404` | Graceful error handling for bad/missing IDs |
 | ✅ | Payload Validation | `POST /gists` | `422` | Rejection when required `files` key is missing |
 | ✅ | Self-Fork Constraint | `POST /gists/{id}/forks` | `422` | Rule enforcement blocking users from forking own Gist |
+| ✅ | Infrastructure Mocking | Network Route Interception | `500/429` | Mock `500 Server Errors` and `429 Rate Limits` via `page.route` |
 
 ---
 
@@ -53,12 +54,12 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ## 🏗️ Project Architecture & Layout
 
 ```text
-┌────────────────────────────────────────────────────────────────────────────────────────┐
+  ┌────────────────────────────────────────────────────────────────────────────────────────┐
   │                                   TEST EXECUTION LAYER                                 │
   │                     (tests/smoke/*.spec.ts & tests/regression/*.spec.ts)               │
   │                                                                                        │
   │  • Spec Suites: CRUD, Stars, Forks, Comments, Pagination, Security & Edge Cases        │
-  │  • Pattern: Strict AAA (Arrange ➔ Act ➔ Assert) Isolation                              │
+  │  • Pattern: Strict AAA (Arrange ➔ Act ➔ Assert) Isolation                            │
   │  • Lifecycle Hooks: beforeEach (Instantiate API) & afterEach (Garbage Collection)      │
   │  • Assertions: Non-blocking Soft Assertions (expect.soft)                              │
   └──────────────────────────┬────────────────────────────────────────┬────────────────────┘
@@ -87,13 +88,13 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
   │  • Wrapper around Playwright APIRequestContext                                         │
   │  • Attaches Auth Bearer Tokens & standard GitHub Headers                               │
   │  • Methods: get(), post(), patch(), put(), delete()                                    │
-  └──────────────────────────────────────────┬─────────────────────────────────────────────┘
+  └────────────────────────────────────────────────────────────────────────────────────────┘
                                              │
                                              │ 5. Transmits Over Wire (HTTPS)
                                              ▼
   ┌────────────────────────────────────────────────────────────────────────────────────────┐
   │                                    GITHUB REST API                                     │
-  │                             (https://api.github.com/gists)                             │
+  │([https://api.github.com/gists](https://api.github.com/gists))                          │
   └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 
