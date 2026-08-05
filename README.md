@@ -14,6 +14,25 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 
 ---
 
+## 🎯 Test Strategy
+The primary objective of this framework is to provide **fast, reliable, and isolated feedback** on the health and contract compliance of the GitHub Gists API.
+
+* **Strict Test Isolation (AAA Pattern):** Every test independently creates its own preconditions (Arrange), executes the target action (Act), and asserts outcomes (Assert).
+* **Zero Cross-Test Dependencies:** Tests do not rely on execution order or hardcoded resource IDs created by previous runs.
+* **Automatic Resource Cleanup:** Every test that creates a Gist registers it for tear-down via lifecycle hooks (`afterEach`), preventing quota exhaustion and state clutter.
+* **Dual-Layer Validation:** Tests validate both **HTTP Protocol Constraints** (Status Codes, Headers) and **Data Integrity** (JSON Schema, payload response body).
+
+```text
+               /\
+              /  \      3. Security & Infrastructure Mocks (Route Interception)
+             /    \     -------------------------------------------------------
+            /      \    2. Business Logic & Regression Suite (Stars, Forks, Comments)
+           /________\   -------------------------------------------------------------
+          /          \  1. Core API Smoke Suite (Critical Path CRUD Operations)
+         /____________\
+```
+---
+
 ## 📊 API Test Coverage Matrix
 ### 1. Core API Smoke Tests (Happy Path)
 | Status | Test Case | Endpoint | Code | Validation Focus |
@@ -44,7 +63,7 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 
 ---
 
-## 🏗️ Project Architecture & Layout
+## 🏗️ Project Architecture
 
 ```text
   ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -93,7 +112,6 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ---
 
 ## 📂 Test Suite Structure
-
 ```text
     tests/
         ├── 🛡️ regression/          # Edge Cases, Security & Infrastructure Mocks
@@ -109,32 +127,6 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
             ├── delete-gist.spec.ts # DELETE /gists/{id}
             ├── get-gist.spec.ts    # GET /gists/{id}
             └── update-gist.spec.ts # PATCH /gists/{id}
-```
-
----
-
-## 🎯 Test Strategy & QA Architecture
-
-### 1. Testing Objectives
-The primary objective of this framework is to provide **fast, reliable, and isolated feedback** on the health and contract compliance of the GitHub Gists API.
-
-* **Strict Test Isolation (AAA Pattern):** Every test independently creates its own preconditions (Arrange), executes the target action (Act), and asserts outcomes (Assert).
-* **Zero Cross-Test Dependencies:** Tests do not rely on execution order or hardcoded resource IDs created by previous runs.
-* **Automatic Resource Cleanup:** Every test that creates a Gist registers it for tear-down via lifecycle hooks (`afterEach`), preventing quota exhaustion and state clutter.
-* **Dual-Layer Validation:** Tests validate both **HTTP Protocol Constraints** (Status Codes, Headers) and **Data Integrity** (JSON Schema, payload response body).
-
----
-
-### 2. Test Execution
-
-```text
-               /\
-              /  \      3. Security & Infrastructure Mocks (Route Interception)
-             /    \     -------------------------------------------------------
-            /      \    2. Business Logic & Regression Suite (Stars, Forks, Comments)
-           /________\   -------------------------------------------------------------
-          /          \  1. Core API Smoke Suite (Critical Path CRUD Operations)
-         /____________\
 ```
 --- 
 ## 📚 References & Documentation
