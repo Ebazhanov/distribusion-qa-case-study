@@ -59,7 +59,7 @@ The primary objective of this framework is to provide **fast, reliable, and isol
 | ✅ | Non-Existent Resource | `GET /gists/{invalid_id}` | `404` | Graceful error handling for bad/missing IDs |
 | ✅ | Payload Validation | `POST /gists` | `422` | Rejection when required `files` key is missing |
 | ✅ | Self-Fork Constraint | `POST /gists/{id}/forks` | `422` | Rule enforcement blocking users from forking own Gist |
-| ✅ | Infrastructure Mocking | Network Route Interception | `500/429` | Mock `500 Server Errors` and `429 Rate Limits` via `page.route` |
+| ✅ | Client Resilience (Mock) | Network Route Interception | `500/429` | Validates client handling of `500 Server Error` & `429 Rate Limits` via `page.route` |
 
 ---
 
