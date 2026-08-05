@@ -11,12 +11,11 @@ test.describe("POST /gists", () => {
     gistApi = new GistApi(request);
   });
 
-  // Added afterEach hook to query createdGistIds and clean up test data
   test.afterEach(async () => {
-    for (const id of createdGistIds) {
+    const idsToDelete = createdGistIds.splice(0, createdGistIds.length);
+    for (const id of idsToDelete) {
       await gistApi.deleteGist(id);
     }
-    createdGistIds.length = 0;
   });
 
   test("Should successfully create a secret gist and validate public=false flag", async ({
@@ -49,7 +48,7 @@ test.describe("POST /gists", () => {
       expect.soft(responseBody.files[fileName]?.content).toBe(jokeContent);
     });
 
-    await test.step("Act: Fetch public gists for username 'Ebazhanov'", async () => {
+    await test.step("Act: Fetch public gists for target user", async () => {
       const userGistsRes = await gistApi.getUserGists(targetUser);
       expect(userGistsRes.status()).toBe(200);
 
@@ -58,15 +57,28 @@ test.describe("POST /gists", () => {
 
     await test.step("Assert: Verify response contains valid gist array owned by target user", async () => {
       expect.soft(Array.isArray(returnedGists)).toBe(true);
+      expect.soft(returnedGists.length).toBeGreaterThan(0);
+
+      const allOwnedByUser = returnedGists.every(
+        (gist) => gist.owner?.login?.toLowerCase() === targetUser.toLowerCase(),
+      );
       expect
-        .soft(returnedGists[0]?.owner?.login?.toLowerCase())
-        .toBe(targetUser.toLowerCase());
+        .soft(allOwnedByUser, `All gists should be owned by ${targetUser}`)
+        .toBe(true);
     });
 
-    await test.step("Assert: Validate the whole array should be public", async () => {
-      returnedGists.forEach((gist) => {
-        expect.soft(gist.public, `Gist ${gist.id} should be public`).toBe(true);
-      });
+    await test.step("Assert: Validate secret gist is not in public endpoint response", async () => {
+      // Check if the endpoint called is public-only or authenticated
+      // If fetching public endpoint /users/{username}/gists:
+      const secretGistInList = returnedGists.find(
+        (gist) => gist.id === responseBody.id,
+      );
+      expect
+        .soft(
+          secretGistInList,
+          "Secret gist should not be in public gists list",
+        )
+        .toBeUndefined();
     });
   });
 });

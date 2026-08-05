@@ -90,8 +90,13 @@ export class GistApi {
 
   /**
    * Lists public gists for a specific GitHub user.
+   * Strips the Authorization header to ensure secret gists are excluded.
    */
   async getUserGists(username: string): Promise<APIResponse> {
-    return await this.client.get(`/users/${username}/gists`);
+    return await this.client.get(`/users/${username}/gists`, {
+      headers: {
+        Authorization: "",
+      },
+    });
   }
 }
