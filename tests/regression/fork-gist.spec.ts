@@ -3,7 +3,7 @@ import { GistApi } from "../../src/api/gist.api";
 import { GistResponse } from "../../src/types/gist.types";
 import { generateGistPayload } from "../../src/utils/gistDataFactory";
 
-test.describe("POST /gists/{gist_id}/forks", () => {
+test.describe("POST /gists/{gist_id}/forks - Multi-Account Forking", () => {
   let gistApi: GistApi;
   const createdGistIdsPrimary: string[] = [];
   const createdGistIdsSecondary: string[] = [];
@@ -27,7 +27,7 @@ test.describe("POST /gists/{gist_id}/forks", () => {
     createdGistIdsSecondary.length = 0;
   });
 
-  test("Should successfully fork a gist using secondary account", async ({
+  test("Should successfully fork a public gist using secondary account token", async ({
     request,
   }) => {
     test.skip(!secondaryToken, "Requires GITHUB_SECONDARY_TOKEN env variable");
@@ -91,7 +91,7 @@ test.describe("POST /gists/{gist_id}/forks", () => {
     });
   });
 
-  test("Should return 422 when attempting to fork one's own gist", async ({
+  test("Should return 422 when attempting to fork one's own gist (Self-Fork Constraint)", async ({
     request,
   }) => {
     let parentGist: GistResponse;

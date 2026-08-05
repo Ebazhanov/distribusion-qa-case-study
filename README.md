@@ -9,62 +9,38 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 
 ### 💡 Why Playwright for API Testing?
 * **Zero Additional Dependencies:** Built-in HTTP client (`APIRequestContext`) eliminates the need for external libraries like Axios or Supertest paired with separate runners (Jest/Mocha).
-* **Unified E2E & API Capabilities:** Enables seamless hybrid testing (e.g., seeding data via API and validating UI/workflows within a single test framework).
-* **Native Assertions & Rich Reporting:** Out-of-the-box HTML reporters and strong assertion matchers (`expect(response.ok())`) provide clear execution insights for CI/CD pipelines.
+* **Unified API & E2E:** Enables hybrid workflows like instant API data seeding for UI tests.
+* **Native Assertions & Reports:** Out-of-the-box status matchers (`expect(response.ok())`) and HTML reports ready for CI/CD.
 
 ---
 
-```text
-┌──────────────────────────────────────────────────────────────────────────┐
-│                      🎭 Playwright API Test Runner                        │
-└──────────────────────────────────────────────────────────────────────────┘
-                                     │
-                        1. POST /gists (Auth & Payload)
-                                     │
-                                     ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                         🐙 GitHub REST API Gateway                       │
-└──────────────────────────────────────────────────────────────────────────┘
-                         │                        │
-               [201 Created]                   [401/404/422 Errors]
-                         │                        │
-                         ▼                        ▼
-┌──────────────────────────────────┐    ┌──────────────────────────────────┐
-│     ✅ Happy Path Suite          │    │     🛡️ Security & Boundary       │
-├──────────────────────────────────┤    ├──────────────────────────────────┤
-│ • Validates schema & headers     │    │ • Unauthenticated token handling │
-│ • Asserts file payload & owner   │    │ • Non-existent ID handling (404) │
-│ • Checks visibility flags        │    │ • Empty/invalid payload rejection│
-└──────────────────────────────────┘    └──────────────────────────────────┘
-                         │
-         3. Auto Cleanup (DELETE /gists/{id})
-                         │
-                         ▼
-┌──────────────────────────────────────────────────────────────────────────┐
-│                   🧹 Teardown Step: 204 No Content                       │
-└──────────────────────────────────────────────────────────────────────────┘
-```
+## 🧪 Test Strategy & Coverage Matri
 
----
-
-## 🧪 Test Cases & Coverage
-### 1. Core API Smoke Tests
-
-| Done | Test Case | Endpoint | Status | Validation Focus |
+### 1. Core API Smoke Tests (Happy Path)
+| Status | Test Case | Endpoint | Code | Validation Focus |
 | :---: | :--- | :--- | :---: | :--- |
-| ✅ | Create **Public** Gist | `POST` `/gists` | `201` | Validate schema, `id`, `public: true`, file content, and owner details |
-| ✅ | Create **Secret** Gist | `POST` `/gists` | `201` | Validate schema and `public: false` visibility flag |
-| ✅ | Get Gist by ID | `GET` `/gists/{gist_id}` | `200` | Validate structural response schema and file payload integrity |
-| ✅ | Update Existing Gist | `PATCH` `/gists/{gist_id}` | `200` | Update description, modify existing files, append new files |
-| ✅ | Delete Gist | `DELETE` `/gists/{gist_id}` | `204` | Confirm resource deletion (Subsequent `GET` returns `404`) |
+| ✅ | Create Public Gist | `POST /gists` | `201` | Schema structure, `id`, `public: true`, file content |
+| ✅ | Create Secret Gist | `POST /gists` | `201` | Schema structure, `public: false` visibility flag |
+| ✅ | Get Gist by ID | `GET /gists/{id}` | `200` | Structural payload schema, file contents match |
+| ✅ | Update Existing Gist | `PATCH /gists/{id}` | `200` | Partial updates (description, file content) |
+| ✅ | Delete Gist | `DELETE /gists/{id}` | `204` | Resource deletion (subsequent `GET` returns `404`) |
 
-### 2. Security & Boundary Test Cases
+### 2. Regression & Business Logic Tests
+| Status | Test Case | Endpoint | Code | Validation Focus |
+| :---: | :--- | :--- | :---: | :--- |
+| ✅ | List Authenticated Gists | `GET /gists` | `200` | Query params (`per_page`), array bounds, array structure |
+| ✅ | List User Public Gists | `GET /users/{user}/gists` | `200` | Filter integrity (`owner.login` handle verification) |
+| ✅ | Star / Unstar Gist | `PUT/DELETE/GET /gists/{id}/star` | `204/404` | State transitions & HTTP status codes |
+| ✅ | Multi-Account Fork | `POST /gists/{id}/forks` | `201` | Account 1 forks Gist created by Account 2 |
+| ✅ | Gist Comments | `POST/GET /gists/{id}/comments` | `201/200` | Create and retrieve comment threads |
 
-| Done | Test Case | Endpoint | Status | Validation Focus |
-|:----:| :--- | :--- | :---: | :--- |
-|  ✅  | Unauthorized Access | `POST` `/gists` | `401` | Reject request when Bearer token is missing or invalid |
-|  ✅  | Non-Existent Resource | `GET` `/gists/{gist_id}` | `404` | Handle invalid or non-existent `gist_id` gracefully |
-|  ✅  | Payload Validation | `POST` `/gists` | `422` | Reject request with empty `files` object or missing required parameters |
+### 3. Security & Boundary Tests (Negative)
+| Status | Test Case | Endpoint | Code | Validation Focus |
+| :---: | :--- | :--- | :---: | :--- |
+| ✅ | Unauthorized Access | `POST /gists` | `401` | Rejection on missing or malformed Bearer token |
+| ✅ | Non-Existent Resource | `GET /gists/{invalid_id}` | `404` | Graceful error handling for bad/missing IDs |
+| ✅ | Payload Validation | `POST /gists` | `422` | Rejection when required `files` key is missing |
+| ✅ | Self-Fork Constraint | `POST /gists/{id}/forks` | `422` | Rule enforcement blocking users from forking own Gist |
 
 ---
 
@@ -77,12 +53,12 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 ## 🏗️ Project Architecture & Layout
 
 ```text
-  ┌────────────────────────────────────────────────────────────────────────────────────────┐
+┌────────────────────────────────────────────────────────────────────────────────────────┐
   │                                   TEST EXECUTION LAYER                                 │
-  │                              (tests/gists/*.spec.ts)                                   │
+  │                     (tests/smoke/*.spec.ts & tests/regression/*.spec.ts)               │
   │                                                                                        │
-  │  • Spec Suite: POST, GET, PATCH, DELETE, Security & Boundary Cases                     │
-  │  • Pattern: Strict AAA (Arrange ➔ Act ➔ Assert) Isolation                            │
+  │  • Spec Suites: CRUD, Stars, Forks, Comments, Pagination, Security & Edge Cases        │
+  │  • Pattern: Strict AAA (Arrange ➔ Act ➔ Assert) Isolation                              │
   │  • Lifecycle Hooks: beforeEach (Instantiate API) & afterEach (Garbage Collection)      │
   │  • Assertions: Non-blocking Soft Assertions (expect.soft)                              │
   └──────────────────────────┬────────────────────────────────────────┬────────────────────┘
@@ -92,11 +68,11 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
                              ▼                                        ▼
   ┌────────────────────────────────────────┐       ┌───────────────────────────────────────┐
   │          DATA & UTILITY LAYER          │       │           API CLIENT LAYER            │
-  │        (src/utils/gistDataFactory)     │       │          (src/api/gist.api)           │
+  │    (src/utils/gistDataFactory & jokes) │       │          (src/api/gist.api)           │
   │                                        │       │                                       │
   │  • Generates dynamic payloads          │       │  • Encapsulates API domain routes     │
-  │  • Integrates external joke API        │       │  • Applies TypeScript Payload Types   │
-  │  • Fallback to deterministic local data│       │  • Handles header overrides (e.g. 401)│
+  │  • Fetches jokes via GeekJokesClient   │       │  • Applies TypeScript Payload Types   │
+  │  • Fallback to deterministic local data│       │  • Handles token/header overrides     │
   └──────────────────────────┬─────────────┘       └──────────────────┬────────────────────┘
                              │                                        │
             2. Returns Type- │                                        │ 4. Passes Request
@@ -109,14 +85,14 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
   │                                (src/client/httpClient)                                 │
   │                                                                                        │
   │  • Wrapper around Playwright APIRequestContext                                         │
-  │  • Built-in Retry Mechanism (Exponential / Fixed Backoff)                              │
-  │  • Methods: get(), post(), patch(), delete()                                           │
+  │  • Attaches Auth Bearer Tokens & standard GitHub Headers                               │
+  │  • Methods: get(), post(), patch(), put(), delete()                                    │
   └──────────────────────────────────────────┬─────────────────────────────────────────────┘
                                              │
                                              │ 5. Transmits Over Wire (HTTPS)
                                              ▼
   ┌────────────────────────────────────────────────────────────────────────────────────────┐
-  │                                  GITHUB REST API V3                                    │
+  │                                    GITHUB REST API                                     │
   │                             (https://api.github.com/gists)                             │
   └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
