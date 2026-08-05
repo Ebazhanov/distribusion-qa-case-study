@@ -14,8 +14,7 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 
 ---
 
-## 🧪 Test Strategy & Coverage Matrix
-
+## 📊 API Test Coverage Matrix
 ### 1. Core API Smoke Tests (Happy Path)
 | Status | Test Case | Endpoint | Code | Validation Focus |
 | :---: | :--- | :--- | :---: | :--- |
@@ -44,12 +43,6 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
 | ✅ | Infrastructure Mocking | Network Route Interception | `500/429` | Mock `500 Server Errors` and `429 Rate Limits` via `page.route` |
 
 ---
-
-## 📚 References & Documentation
-* 📖 [GitHub REST API - Gists Documentation](https://docs.github.com/en/rest/gists/gists) — Official GitHub REST API specifications for Gists resource management.
-* 🎭 [Playwright API Testing Docs](https://playwright.dev/docs/api-testing) — Official guide for `APIRequestContext` and HTTP assertions in Playwright.
-
---- 
 
 ## 🏗️ Project Architecture & Layout
 
@@ -97,26 +90,53 @@ Automated API testing framework designed to validate the **GitHub Gists API** us
   │([https://api.github.com/gists](https://api.github.com/gists))                          │
   └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+---
 
---- 
-
-## 📂 Test Suite Structure & Execution Strategy
+## 📂 Test Suite Structure
 
 ```text
     tests/
-    ├── 🧪 smoke/               # Build Verification (Critical Path E2E CRUD)
-    │   ├── create-gist.spec.ts # POST /gists (Schema & Payload Validation)
-    │   ├── get-gist.spec.ts    # GET /gists/{id}
-    │   ├── update-gist.spec.ts # PATCH /gists/{id}
-    │   └── delete-gist.spec.ts # DELETE /gists/{id}
-    │
-    ├── 🛡️ regression/          # Edge Cases, Security & Secondary Features
-    │   ├── comments-and-pagination.spec.ts
-    │   ├── fork-gist.spec.ts   # Multi-account & Self-fork checks
-    │   ├── list-gists.spec.ts  # Query parameter validations
-    │   ├── security-edge-cases.spec.ts # 401, 404, 422 validations
-    │   └── star-gist.spec.ts   # PUT / DELETE star endpoints
-    │
-    └── 🔍 exploratory/        # Raw Reference & Prototyping
-        └── gist-api-raw.spec.ts # Unabstracted E2E sandbox script
+        ├── 🛡️ regression/          # Edge Cases, Security & Infrastructure Mocks
+        │   ├── comments-and-pagination.spec.ts
+        │   ├── fork-gist.spec.ts   # Multi-account & Self-fork checks
+        │   ├── infrastructure-mocks.spec.ts # 500 & 429 Route Interception
+        │   ├── list-gists.spec.ts  # Query parameter validations
+        │   ├── security-edge-cases.spec.ts # 401, 404, 422 validations
+        │   └── star-gist.spec.ts   # PUT / DELETE star endpoints
+        │
+        └── 🧪 smoke/               # Build Verification (Critical Path E2E CRUD)
+            ├── create-gist.spec.ts # POST /gists (Schema & Payload Validation)
+            ├── delete-gist.spec.ts # DELETE /gists/{id}
+            ├── get-gist.spec.ts    # GET /gists/{id}
+            └── update-gist.spec.ts # PATCH /gists/{id}
 ```
+
+---
+
+## 🎯 Deep Dive: Test Strategy & QA Architecture
+
+### 1. Testing Objectives & Philosophy
+The primary objective of this framework is to provide **fast, reliable, and isolated feedback** on the health and contract compliance of the GitHub Gists API.
+
+* **Strict Test Isolation (AAA Pattern):** Every test independently creates its own preconditions (Arrange), executes the target action (Act), and asserts outcomes (Assert).
+* **Zero Cross-Test Dependencies:** Tests do not rely on execution order or hardcoded resource IDs created by previous runs.
+* **Automatic Resource Cleanup:** Every test that creates a Gist registers it for tear-down via lifecycle hooks (`afterEach`), preventing quota exhaustion and state clutter.
+* **Dual-Layer Validation:** Tests validate both **HTTP Protocol Constraints** (Status Codes, Headers) and **Data Integrity** (JSON Schema, payload response body).
+
+---
+
+### 2. Test Execution Tiering
+
+```text
+               /\
+              /  \      3. Security & Infrastructure Mocks (Route Interception)
+             /    \     -------------------------------------------------------
+            /      \    2. Business Logic & Regression Suite (Stars, Forks, Comments)
+           /________\   -------------------------------------------------------------
+          /          \  1. Core API Smoke Suite (Critical Path CRUD Operations)
+         /____________\
+```
+--- 
+## 📚 References & Documentation
+* 📖 [GitHub REST API - Gists Documentation](https://docs.github.com/en/rest/gists/gists) — Official GitHub REST API specifications for Gists resource management.
+* 🎭 [Playwright API Testing Docs](https://playwright.dev/docs/api-testing) — Official guide for `APIRequestContext` and HTTP assertions in Playwright.
