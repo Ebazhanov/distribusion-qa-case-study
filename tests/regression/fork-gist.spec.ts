@@ -3,7 +3,7 @@ import { GistApi } from "../../src/api/gist.api";
 import { GistResponse } from "../../src/types/gist.types";
 import { generateGistPayload } from "../../src/utils/gistDataFactory";
 
-test.describe("POST /gists/{gist_id}/forks - Multi-Account Forking", () => {
+test.describe("POST /gists/{gist_id}/forks - Multi-Account Forking & Fork Integrity", () => {
   let gistApi: GistApi;
   const createdGistIdsPrimary: string[] = [];
   const createdGistIdsSecondary: string[] = [];
@@ -27,7 +27,7 @@ test.describe("POST /gists/{gist_id}/forks - Multi-Account Forking", () => {
     createdGistIdsSecondary.length = 0;
   });
 
-  test("Should successfully fork a public gist using secondary account token", async ({
+  test("Should successfully fork a public gist using secondary account token and verify in forks list", async ({
     request,
   }) => {
     test.skip(!secondaryToken, "Requires GITHUB_SECONDARY_TOKEN env variable");
@@ -55,6 +55,20 @@ test.describe("POST /gists/{gist_id}/forks - Multi-Account Forking", () => {
     await test.step("Verify newly created fork ID differs from parent", async () => {
       expect.soft(forkedGist.id).toBeDefined();
       expect.soft(forkedGist.id).not.toBe(targetGist.id);
+    });
+
+    await test.step("Verify secondary account fork appears in primary Gist forks list (GET /gists/{id}/forks)", async () => {
+      const getForksRes = await gistApi.getGistForks(targetGist.id);
+      expect(getForksRes.status()).toBe(200);
+
+      const forks = await getForksRes.json();
+      expect.soft(Array.isArray(forks)).toBe(true);
+
+      const targetFork = forks.find(
+        (f: GistResponse) => f.id === forkedGist.id,
+      );
+      expect.soft(targetFork).toBeDefined();
+      expect.soft(targetFork?.owner?.login).toBe(forkedGist.owner?.login);
     });
   });
 

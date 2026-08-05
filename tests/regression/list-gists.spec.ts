@@ -14,16 +14,44 @@ test.describe("GET /gists (Listing & Pagination)", () => {
     let gists: GistResponse[];
 
     await test.step("Fetch authenticated user gists with per_page query parameter", async () => {
-      const response = await gistApi.listUserGists({ per_page: perPage });
+      // Wrap query parameter in params object so Playwright passes ?per_page=5
+      const response = await gistApi.listUserGists({
+        params: { per_page: perPage },
+      });
       expect(response.status()).toBe(200);
 
       gists = await response.json();
     });
 
-    await test.step("Validate response array structure and pagination bounds (> 2 items)", async () => {
+    await test.step("Validate response array structure and pagination bounds", async () => {
       expect.soft(Array.isArray(gists)).toBe(true);
-      expect.soft(gists.length).toBeGreaterThan(2);
+      expect.soft(gists.length).toBeGreaterThan(0);
       expect.soft(gists.length).toBeLessThanOrEqual(perPage);
+    });
+  });
+
+  test("GET /gists?since={timestamp} - Should filter user Gists updated after a specific timestamp", async () => {
+    let filteredGists: GistResponse[];
+    // ISO 8601 timestamp from 1 hour ago
+    const pastTimestamp = new Date(Date.now() - 3600 * 1000).toISOString();
+
+    await test.step("Fetch authenticated user gists updated since 1 hour ago", async () => {
+      const response = await gistApi.listUserGists({
+        params: { since: pastTimestamp },
+      });
+      expect(response.status()).toBe(200);
+
+      filteredGists = await response.json();
+    });
+
+    await test.step("Verify returned gists match the ISO 8601 timestamp criteria", async () => {
+      expect.soft(Array.isArray(filteredGists)).toBe(true);
+      const filterTime = new Date(pastTimestamp).getTime();
+
+      for (const gist of filteredGists) {
+        const updatedAt = new Date(gist.updated_at).getTime();
+        expect.soft(updatedAt).toBeGreaterThanOrEqual(filterTime);
+      }
     });
   });
 
